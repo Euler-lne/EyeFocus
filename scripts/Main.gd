@@ -32,10 +32,10 @@ extends Control
 @onready var distance_edit: LineEdit = \
 	$CalibrationPopup/CalibrationVBox/DistanceInput/DistanceEdit
 
-@onready var up_btn: Button = $BottomButtonBar/UpBtn
-@onready var down_btn: Button = $BottomButtonBar/DownBtn
-@onready var left_btn: Button = $BottomButtonBar/LeftBtn
-@onready var right_btn: Button = $BottomButtonBar/RightBtn
+@onready var up_btn: Button = $DirectionButtonBar/UpBtn
+@onready var down_btn: Button = $DirectionButtonBar/DownBtn
+@onready var left_btn: Button = $DirectionButtonBar/BottomButtonBar/LeftBtn
+@onready var right_btn: Button = $DirectionButtonBar/BottomButtonBar/RightBtn
 
 @onready var hint_label: Label = \
 	$HBoxContainer/RightPanel/RightPanelMargin/VBoxContainer/HintLabel

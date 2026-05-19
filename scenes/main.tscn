@@ -232,52 +232,6 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 15
 autowrap_mode = 3
 
-[node name="BottomButtonBar" type="HBoxContainer" parent="." unique_id=1951068728]
-layout_mode = 1
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_top = -64.0
-offset_right = 412.0
-grow_vertical = 0
-alignment = 1
-
-[node name="UpBtn" type="Button" parent="BottomButtonBar" unique_id=722073014]
-custom_minimum_size = Vector2(110, 52)
-layout_mode = 2
-theme_override_font_sizes/font_size = 18
-theme_override_styles/normal = SubResource("StyleBoxFlat_bottom_btn")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_bottom_btn_pressed")
-theme_override_styles/hover = SubResource("StyleBoxFlat_bottom_btn_hover")
-text = "上 ↑"
-
-[node name="LeftBtn" type="Button" parent="BottomButtonBar" unique_id=1856079143]
-custom_minimum_size = Vector2(110, 52)
-layout_mode = 2
-theme_override_font_sizes/font_size = 18
-theme_override_styles/normal = SubResource("StyleBoxFlat_bottom_btn")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_bottom_btn_pressed")
-theme_override_styles/hover = SubResource("StyleBoxFlat_bottom_btn_hover")
-text = "左 ←"
-
-[node name="DownBtn" type="Button" parent="BottomButtonBar" unique_id=755714193]
-custom_minimum_size = Vector2(110, 52)
-layout_mode = 2
-theme_override_font_sizes/font_size = 18
-theme_override_styles/normal = SubResource("StyleBoxFlat_bottom_btn")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_bottom_btn_pressed")
-theme_override_styles/hover = SubResource("StyleBoxFlat_bottom_btn_hover")
-text = "下 ↓"
-
-[node name="RightBtn" type="Button" parent="BottomButtonBar" unique_id=1030653421]
-custom_minimum_size = Vector2(110, 52)
-layout_mode = 2
-theme_override_font_sizes/font_size = 18
-theme_override_styles/normal = SubResource("StyleBoxFlat_bottom_btn")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_bottom_btn_pressed")
-theme_override_styles/hover = SubResource("StyleBoxFlat_bottom_btn_hover")
-text = "右 →"
-
 [node name="CalibrationPopup" type="PopupPanel" parent="." unique_id=1512827256]
 size = Vector2i(400, 320)
 
@@ -379,6 +333,58 @@ text = "右眼视力: --"
 [node name="ResultCloseBtn" type="Button" parent="ResultPopup/ResultVBox" unique_id=572061333]
 layout_mode = 2
 text = "关闭"
+
+[node name="DirectionButtonBar" type="VBoxContainer" parent="." unique_id=2022204134]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -164.0
+offset_right = 260.0
+grow_vertical = 0
+
+[node name="UpBtn" type="Button" parent="DirectionButtonBar" unique_id=722073014]
+custom_minimum_size = Vector2(110, 52)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_bottom_btn")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_bottom_btn_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_bottom_btn_hover")
+text = "上 ↑"
+
+[node name="BottomButtonBar" type="HBoxContainer" parent="DirectionButtonBar" unique_id=1951068728]
+layout_mode = 2
+alignment = 1
+
+[node name="LeftBtn" type="Button" parent="DirectionButtonBar/BottomButtonBar" unique_id=1856079143]
+custom_minimum_size = Vector2(110, 52)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_bottom_btn")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_bottom_btn_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_bottom_btn_hover")
+text = "左 ←"
+
+[node name="RightBtn" type="Button" parent="DirectionButtonBar/BottomButtonBar" unique_id=1030653421]
+custom_minimum_size = Vector2(110, 52)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_bottom_btn")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_bottom_btn_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_bottom_btn_hover")
+text = "右 →"
+
+[node name="DownBtn" type="Button" parent="DirectionButtonBar" unique_id=755714193]
+custom_minimum_size = Vector2(110, 52)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_bottom_btn")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_bottom_btn_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_bottom_btn_hover")
+text = "下 ↓"
 
 [connection signal="pressed" from="HBoxContainer/LeftPanel/LeftPanelMargin/VBoxContainer/ModeSection/ModeButtons/LeftEyeBtn" to="." method="_on_mode_left"]
 [connection signal="pressed" from="HBoxContainer/LeftPanel/LeftPanelMargin/VBoxContainer/ModeSection/ModeButtons/RightEyeBtn" to="." method="_on_mode_right"]
