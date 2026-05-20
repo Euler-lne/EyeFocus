@@ -49,7 +49,7 @@ func _draw():
 	var r = s * 0.5 + 12.0 + breath   # 基础偏移从 6 增加到 12
 	var pos = _positions[_target_idx]
 	var center = pos + Vector2(s * 0.5, s * 0.5)
-	draw_arc(center, r, 0.0, TAU, 64, Color(1.0, 0.0, 0.0, 1.0), 5.0)  # 纯红，线宽 5
+	draw_arc(center, r, 0.0, TAU, 64, Color(1.0, 0.0, 0.0, 1.0), 10.0)  # 纯红，线宽 5
 
 func _on_resized():
 	if _optotype_size > 0.0:

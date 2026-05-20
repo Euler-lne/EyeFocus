@@ -40,8 +40,8 @@ func _draw():
 	draw_rect(Rect2(ox, oy, stroke, s), c)
 	# 上横臂
 	draw_rect(Rect2(ox, oy, s, stroke), c)
-	# 中横臂（60% 宽）
-	draw_rect(Rect2(ox, oy + half - stroke * 0.5, s * 0.6, stroke), c)
+	# 中横臂
+	draw_rect(Rect2(ox, oy + half - stroke * 0.5, s, stroke), c)
 	# 下横臂
 	draw_rect(Rect2(ox, oy + s - stroke, s, stroke), c)
 
