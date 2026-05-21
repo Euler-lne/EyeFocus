@@ -157,11 +157,38 @@
 			content: '';
 			position: absolute;
 			inset: 0;
-			background: radial-gradient(ellipse 700px 500px at 20% 30%, rgba(94, 207, 207, .07), transparent), radial-gradient(ellipse 600px 600px at 80% 65%, rgba(130, 94, 207, .05), transparent);
+			background:
+				radial-gradient(ellipse 700px 500px at 20% 30%, rgba(94, 207, 207, .07), transparent),
+				radial-gradient(ellipse 600px 600px at 80% 65%, rgba(130, 94, 207, .05), transparent);
 			pointer-events: none
 		}
 
-		/* 背景大E — 改为与文字颜色接近的浅青色，降低饱和度避免喧宾夺主 */
+		.hero::after {
+			content: '';
+			position: absolute;
+			inset: 0;
+			background: repeating-linear-gradient(90deg,
+					transparent, transparent 80px,
+					rgba(94, 207, 207, .015) 80px, rgba(94, 207, 207, .015) 81px);
+			pointer-events: none
+		}
+
+		@keyframes floatE {
+
+			0%,
+			100% {
+				transform: translate(-50%, -52%) scale(1) rotate(0deg)
+			}
+
+			33% {
+				transform: translate(-50%, -54%) scale(1.02) rotate(0.3deg)
+			}
+
+			66% {
+				transform: translate(-50%, -50%) scale(0.98) rotate(-0.3deg)
+			}
+		}
+
 		.hero-e {
 			position: absolute;
 			top: 50%;
@@ -174,12 +201,12 @@
 			user-select: none;
 			pointer-events: none;
 			letter-spacing: -0.02em;
-			/* 与标题渐变色系相同，但极低透明度，形成若隐若现的融合效果 */
 			background: linear-gradient(160deg, rgba(94, 207, 207, .07) 0%, rgba(255, 255, 255, .04) 60%);
 			-webkit-background-clip: text;
 			-webkit-text-fill-color: transparent;
 			background-clip: text;
-			filter: blur(1px)
+			filter: blur(1px);
+			animation: floatE 8s ease-in-out infinite
 		}
 
 		.hero-badge {
@@ -325,7 +352,6 @@
 			margin-right: auto
 		}
 
-		/* divider line */
 		.section-header::after {
 			content: '';
 			display: block;
@@ -336,15 +362,27 @@
 			border-radius: 1px
 		}
 
-		/* ── Features ── */
+		/* ── Features (9 items, 3x3 grid) ── */
 		.features {
 			background: #080812
 		}
 
 		.feature-grid {
 			display: grid;
-			grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+			grid-template-columns: repeat(3, 1fr);
 			gap: 20px
+		}
+
+		@media(max-width: 860px) {
+			.feature-grid {
+				grid-template-columns: repeat(2, 1fr);
+			}
+		}
+
+		@media(max-width: 560px) {
+			.feature-grid {
+				grid-template-columns: 1fr;
+			}
 		}
 
 		.feature-card {
@@ -412,7 +450,7 @@
 		}
 
 		.feature-card:nth-child(9) {
-			--fc-accent: #5ecfcf
+			--fc-accent: #f58c7c
 		}
 
 		.feature-icon {
@@ -439,6 +477,105 @@
 			font-size: .875rem;
 			color: #6a6a88;
 			line-height: 1.65
+		}
+
+		/* ── Print Report Preview (new style) ── */
+		.print-section {
+			background: #07070d
+		}
+
+		.print-preview {
+			max-width: 420px;
+			margin: 0 auto;
+			background: #0f0f18;
+			border: 1px solid rgba(94, 207, 207, .2);
+			border-radius: 16px;
+			padding: 24px 20px;
+			font-family: "SF Mono", "Fira Code", "Cascadia Code", "Courier New", monospace;
+			font-size: 0.8rem;
+			line-height: 1.5;
+			color: #c0c0d0;
+			box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+			transition: all 0.3s ease;
+		}
+
+		.print-preview:hover {
+			border-color: rgba(94, 207, 207, 0.5);
+			box-shadow: 0 16px 32px rgba(94, 207, 207, 0.1);
+		}
+
+		.print-preview .header {
+			text-align: center;
+			border-bottom: 1px dashed #3a3a5a;
+			padding-bottom: 10px;
+			margin-bottom: 16px;
+		}
+
+		.print-preview .title {
+			font-size: 1rem;
+			font-weight: 700;
+			color: #5ecfcf;
+			letter-spacing: 1px;
+		}
+
+		.print-preview .sub {
+			font-size: 0.7rem;
+			color: #7a7a9a;
+		}
+
+		.print-preview .row {
+			display: flex;
+			justify-content: space-between;
+			margin-bottom: 8px;
+		}
+
+		.print-preview .label {
+			color: #7a7a9a;
+		}
+
+		.print-preview .value {
+			color: #e0e0f0;
+			font-weight: 600;
+		}
+
+		.print-preview .vision-row {
+			background: rgba(94, 207, 207, 0.08);
+			padding: 10px 12px;
+			border-radius: 12px;
+			margin: 18px 0;
+		}
+
+		.print-preview .vision-item {
+			flex: 1;
+			text-align: center;
+		}
+
+		.print-preview .vision-val {
+			font-size: 1.4rem;
+			font-weight: 800;
+			color: #5ecfcf;
+		}
+
+		.print-preview .advice {
+			font-size: 0.75rem;
+			text-align: center;
+			padding: 8px 12px;
+			border-radius: 20px;
+			margin: 16px 0 10px;
+			background: rgba(94, 207, 207, 0.1);
+		}
+
+		.print-preview .advice-ok {
+			color: #5ecfcf;
+		}
+
+		.print-preview .footer {
+			font-size: 0.65rem;
+			text-align: center;
+			color: #5a5a7a;
+			border-top: 1px dashed #3a3a5a;
+			padding-top: 12px;
+			margin-top: 12px;
 		}
 
 		/* ── Screenshot ── */
@@ -468,7 +605,6 @@
 			height: auto
 		}
 
-		/* placeholder when img not loaded */
 		.screenshot-placeholder {
 			width: 100%;
 			aspect-ratio: 16/9;
@@ -790,7 +926,6 @@
 				gap: 24px
 			}
 
-			.feature-grid,
 			.how-steps,
 			.arch-grid {
 				grid-template-columns: 1fr
@@ -819,12 +954,13 @@
 		<div class="nav-logo">Eye<span>Focus</span></div>
 		<ul>
 			<li><a href="#features">特性</a></li>
+			<li><a href="#print">打印报告</a></li>
 			<li><a href="#screenshot">界面</a></li>
 			<li><a href="#how">使用</a></li>
 			<li><a href="#arch">架构</a></li>
 			<li><a href="#tech">技术</a></li>
 		</ul>
-		<a href="https://github.com/Euler-lne/eye-focus" class="nav-gh" target="_blank">
+		<a href="https://github.com/sybupt/EyeFocus" class="nav-gh" target="_blank">
 			<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
 				<path
 					d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.38.6.11.82-.26.82-.58v-2.03c-3.34.72-4.04-1.61-4.04-1.61-.54-1.38-1.33-1.75-1.33-1.75-1.08-.74.08-.72.08-.72 1.2.08 1.83 1.23 1.83 1.23 1.06 1.82 2.78 1.29 3.46.99.1-.77.41-1.3.75-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.17 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 013-.4c1.02.005 2.04.14 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.66 1.65.24 2.87.12 3.17.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.82.58C20.56 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z" />
@@ -835,14 +971,13 @@
 
 	<!-- Hero -->
 	<section class="hero">
-		<!-- 背景E字：与标题渐变色系融合，极低透明度 -->
 		<div class="hero-e" aria-hidden="true">E</div>
-		<div class="hero-badge">Godot Engine 4 · GB 11533 标准</div>
+		<div class="hero-badge">Godot Engine 4.6 · GB 11533 标准</div>
 		<h1>EyeFocus</h1>
-		<p>基于物理精确计算的专业视力自测工具。将标准对数视力表数字化，在屏幕上实现准确可靠的视力测量。</p>
+		<p>基于物理精确计算的专业视力自测工具。将标准对数视力表数字化，在屏幕上实现准确可靠的视力测量，支持热敏打印机输出报告。</p>
 		<div class="hero-actions">
 			<a href="#features" class="btn btn-primary">了解特性</a>
-			<a href="https://github.com/your-username/eye-focus" class="btn btn-outline" target="_blank">GitHub 源码</a>
+			<a href="https://github.com/sybupt/EyeFocus" class="btn btn-outline" target="_blank">GitHub 源码</a>
 		</div>
 		<div class="hero-stats">
 			<div class="hero-stat">
@@ -864,7 +999,7 @@
 		</div>
 	</section>
 
-	<!-- Features -->
+	<!-- Features (9 items, 3x3) -->
 	<section id="features" class="features">
 		<div class="section-inner">
 			<div class="section-header reveal">
@@ -913,9 +1048,49 @@
 					<p>自定义输入显示器对角线尺寸、屏幕分辨率、实测距离，适配不同硬件环境与检测条件。</p>
 				</div>
 				<div class="feature-card reveal">
-					<div class="feature-icon">&#9711;</div>
-					<h3>红圈呼吸提示</h3>
-					<p>目标视标由红色呼吸动画圆环标记，脉动效果帮助聚焦注意力，提升测试专注度与准确性。</p>
+					<div class="feature-icon">&#9993;</div>
+					<h3>热敏打印机支持</h3>
+					<p>通过串口连接 EM5820H 热敏打印机，测试完成后一键打印专业视力报告，方便存档与对比。</p>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Print Report Preview (new modern style) -->
+	<section id="print" class="print-section">
+		<div class="section-inner">
+			<div class="section-header reveal">
+				<h2>打印报告样式</h2>
+				<p>连接 EM5820H 热敏打印机，一键输出专业视力报告</p>
+			</div>
+			<div class="print-preview reveal">
+				<div class="header">
+					<div class="title">EyeFocus 视力测试报告</div>
+					<div class="sub">专业视力自测系统</div>
+				</div>
+				<div class="row">
+					<span class="label">测试时间</span>
+					<span class="value">2026-05-21 14:35:54</span>
+				</div>
+				<div class="row">
+					<span class="label">测试标准</span>
+					<span class="value">GB 11533 · 5m</span>
+				</div>
+				<div class="vision-row" style="display: flex; gap: 16px;">
+					<div class="vision-item">
+						<div class="label">左眼视力</div>
+						<div class="vision-val">1.00</div>
+					</div>
+					<div class="vision-item">
+						<div class="label">右眼视力</div>
+						<div class="vision-val">1.00</div>
+					</div>
+				</div>
+				<div class="advice advice-ok">
+					✓ 视力正常，建议定期复查
+				</div>
+				<div class="footer">
+					本报告仅供参考 | 如有异常请到医院就诊
 				</div>
 			</div>
 		</div>
@@ -929,11 +1104,6 @@
 				<p>深色极简风格，三分栏横屏布局，专注视力测试</p>
 			</div>
 			<div class="screenshot-frame reveal">
-				<!-- 有截图时替换为 <img src="imgs/screenshot.png" alt="EyeFocus 界面截图"> -->
-				<!-- <div class="screenshot-placeholder">
-					E
-					<span>应用界面截图 · 请替换为实际截图</span>
-				</div> -->
 				<img src="imgs/screenshot.png" alt="EyeFocus 界面截图">
 			</div>
 		</div>
@@ -968,8 +1138,8 @@
 					<p>点击底部方向按钮，或按 W / A / S / D（↑ ← ↓ →）快捷键提交答案</p>
 				</div>
 				<div class="step reveal">
-					<h3>查看最终结果</h3>
-					<p>系统自适应调整视力等级，测试完成后点击「生成最终结果」查看左右眼视力报告</p>
+					<h3>打印视力报告</h3>
+					<p>测试完成后点击「生成最终结果」，连接热敏打印机即可一键打印专业视力报告</p>
 				</div>
 			</div>
 
@@ -1024,6 +1194,11 @@
 					<h4>测试流程控制器</h4>
 					<p>答题验证、状态更新、视标刷新触发，串联整个测试流程的事件驱动引擎。</p>
 				</div>
+				<div class="arch-card reveal">
+					<div class="file">scripts/PrinterManager.gd</div>
+					<h4>打印机管理器</h4>
+					<p>通过串口连接 EM5820H 热敏打印机，支持真实打印与终端模拟双模式，输出格式化视力报告。</p>
+				</div>
 			</div>
 			<div class="arch-formula reveal">
 				<div style="color:#5ecfcf;font-weight:600;margin-bottom:14px;font-size:.88rem">核心换算公式</div>
@@ -1048,11 +1223,11 @@
 				<table class="tech-table">
 					<tr>
 						<td>引擎版本</td>
-						<td>Godot 4.x</td>
+						<td>Godot 4.6</td>
 					</tr>
 					<tr>
 						<td>开发语言</td>
-						<td>GDScript（纯原生，无第三方插件）</td>
+						<td>GDScript（纯原生）</td>
 					</tr>
 					<tr>
 						<td>渲染器</td>
@@ -1069,6 +1244,10 @@
 					<tr>
 						<td>视力标准</td>
 						<td>GB 11533 / ISO 8596（0.1 ~ 2.0）</td>
+					</tr>
+					<tr>
+						<td>打印机支持</td>
+						<td>EM5820H 热敏打印机（串口）</td>
 					</tr>
 					<tr>
 						<td>运行平台</td>
