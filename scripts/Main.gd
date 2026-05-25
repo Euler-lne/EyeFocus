@@ -4,54 +4,57 @@ extends Control
 @onready var optotype_container: OptotypeContainer = \
 	$HBoxContainer/CenterContainer/EyeChartArea/OptotypeContainer
 
-@onready var left_eye_data:      Label  = $HBoxContainer/RightPanel/RightPanelMargin/VBoxContainer/LeftEyeData
-@onready var right_eye_data:     Label  = $HBoxContainer/RightPanel/RightPanelMargin/VBoxContainer/RightEyeData
-@onready var current_vision_lbl: Label  = $HBoxContainer/RightPanel/RightPanelMargin/VBoxContainer/CurrentVision
-@onready var consecutive_lbl:    Label  = $HBoxContainer/RightPanel/RightPanelMargin/VBoxContainer/ConsecutiveInfo
-@onready var distance_lbl:       Label  = $HBoxContainer/RightPanel/RightPanelMargin/VBoxContainer/DistanceInfo
-@onready var screen_lbl:         Label  = $HBoxContainer/RightPanel/RightPanelMargin/VBoxContainer/ScreenInfo
-@onready var hint_label:         Label  = $HBoxContainer/RightPanel/RightPanelMargin/VBoxContainer/HintLabel
-@onready var pause_btn:          Button = $HBoxContainer/LeftPanel/LeftPanelMargin/VBoxContainer/ControlSection/PauseBtn
+@onready var left_eye_data: Label = $HBoxContainer/RightPanel/RightPanelMargin/VBoxContainer/LeftEyeData
+@onready var right_eye_data: Label = $HBoxContainer/RightPanel/RightPanelMargin/VBoxContainer/RightEyeData
+@onready var current_vision_lbl: Label = $HBoxContainer/RightPanel/RightPanelMargin/VBoxContainer/CurrentVision
+@onready var consecutive_lbl: Label = $HBoxContainer/RightPanel/RightPanelMargin/VBoxContainer/ConsecutiveInfo
+@onready var distance_lbl: Label = $HBoxContainer/RightPanel/RightPanelMargin/VBoxContainer/DistanceInfo
+@onready var screen_lbl: Label = $HBoxContainer/RightPanel/RightPanelMargin/VBoxContainer/ScreenInfo
+@onready var hint_label: Label = $HBoxContainer/RightPanel/RightPanelMargin/VBoxContainer/HintLabel
+@onready var pause_btn: Button = $HBoxContainer/LeftPanel/LeftPanelMargin/VBoxContainer/ControlSection/PauseBtn
 
-@onready var calibration_popup:  PopupPanel = $CalibrationPopup
-@onready var result_popup:       PopupPanel = $ResultPopup
+@onready var calibration_popup: PopupPanel = $CalibrationPopup
+@onready var result_popup: PopupPanel = $ResultPopup
 
-@onready var screen_size_edit:   LineEdit = $CalibrationPopup/CalibrationVBox/ScreenSizeInput/ScreenSizeEdit
-@onready var width_edit:         LineEdit = $CalibrationPopup/CalibrationVBox/ResolutionInput/WidthEdit
-@onready var height_edit:        LineEdit = $CalibrationPopup/CalibrationVBox/ResolutionInput/HeightEdit
-@onready var distance_edit:      LineEdit = $CalibrationPopup/CalibrationVBox/DistanceInput/DistanceEdit
+@onready var screen_size_edit: LineEdit = $CalibrationPopup/CalibrationVBox/ScreenSizeInput/ScreenSizeEdit
+@onready var width_edit: LineEdit = $CalibrationPopup/CalibrationVBox/ResolutionInput/WidthEdit
+@onready var height_edit: LineEdit = $CalibrationPopup/CalibrationVBox/ResolutionInput/HeightEdit
+@onready var distance_edit: LineEdit = $CalibrationPopup/CalibrationVBox/DistanceInput/DistanceEdit
 
-@onready var up_btn:    Button = $DirectionButtonBar/UpBtn
-@onready var down_btn:  Button = $DirectionButtonBar/DownBtn
-@onready var left_btn:  Button = $DirectionButtonBar/BottomButtonBar/LeftBtn
+@onready var up_btn: Button = $DirectionButtonBar/UpBtn
+@onready var down_btn: Button = $DirectionButtonBar/DownBtn
+@onready var left_btn: Button = $DirectionButtonBar/BottomButtonBar/LeftBtn
 @onready var right_btn: Button = $DirectionButtonBar/BottomButtonBar/RightBtn
 
 # 结果弹窗内的子节点
-@onready var result_left_lbl:  Label  = $ResultPopup/ResultVBox/ResultLeftEye
-@onready var result_right_lbl: Label  = $ResultPopup/ResultVBox/ResultRightEye
-@onready var print_btn:        Button = $ResultPopup/ResultVBox/PrintBtn
-@onready var print_status_lbl: Label  = $ResultPopup/ResultVBox/PrintStatusLabel
+@onready var result_left_lbl: Label = $ResultPopup/ResultVBox/ResultLeftEye
+@onready var result_right_lbl: Label = $ResultPopup/ResultVBox/ResultRightEye
+@onready var print_btn: Button = $ResultPopup/ResultVBox/PrintBtn
+@onready var print_status_lbl: Label = $ResultPopup/ResultVBox/PrintStatusLabel
 
 # 打印机串口选择（弹窗内）
-@onready var port_option:      OptionButton = $ResultPopup/ResultVBox/PortHBox/PortOption
-@onready var connect_btn:      Button       = $ResultPopup/ResultVBox/PortHBox/ConnectBtn
+@onready var port_option: OptionButton = $ResultPopup/ResultVBox/PortHBox/PortOption
+@onready var connect_btn: Button = $ResultPopup/ResultVBox/PortHBox/ConnectBtn
 
 # ── 管理器 ──────────────────────────────────────────────────
-var vision_calc:     VisionCalculator
-var level_manager:   VisionLevelManager
+var vision_calc: VisionCalculator
+var level_manager: VisionLevelManager
 var test_controller: TestController
-var printer_mgr:     PrinterManager      # ← 新增
+var printer_mgr: PrinterManager # ← 新增
 
 # ── 状态 ────────────────────────────────────────────────────
-var is_paused:              bool   = false
-var current_mode:           String = "left"
-var is_testing_left:        bool   = true
-var _answer_feedback_timer: float  = 0.0
+var is_paused: bool = false
+var current_mode: String = "left"
+var is_testing_left: bool = true
+var _answer_feedback_timer: float = 0.0
 
 # ── 初始化 ──────────────────────────────────────────────────
 func _ready():
-	vision_calc     = VisionCalculator.new()
-	level_manager   = VisionLevelManager.new()
+	# 快捷键必须最先注册，否则首帧 _input() 触发时 action 不存在
+	_setup_shortcuts()
+
+	vision_calc = VisionCalculator.new()
+	level_manager = VisionLevelManager.new()
 	test_controller = TestController.new()
 	test_controller.init(level_manager, vision_calc, optotype_container)
 
@@ -64,16 +67,15 @@ func _ready():
 	test_controller.answer_processed.connect(_on_answer_processed)
 
 	# 答题按钮绑定
-	up_btn.pressed.connect(func():    _on_answer("up"))
-	down_btn.pressed.connect(func():  _on_answer("down"))
-	left_btn.pressed.connect(func():  _on_answer("left"))
+	up_btn.pressed.connect(func(): _on_answer("up"))
+	down_btn.pressed.connect(func(): _on_answer("down"))
+	left_btn.pressed.connect(func(): _on_answer("left"))
 	right_btn.pressed.connect(func(): _on_answer("right"))
 
 	# 打印相关按钮
 	print_btn.pressed.connect(_on_print_result)
 	connect_btn.pressed.connect(_on_toggle_port_connect)
 
-	_setup_shortcuts()
 	_load_default_calibration()
 	_apply_calibration()
 	_update_ui_display()
@@ -89,28 +91,28 @@ func _process(delta: float):
 func _load_default_calibration():
 	var s = DisplayServer.screen_get_size()
 	screen_size_edit.text = "24.0"
-	width_edit.text       = str(s.x)
-	height_edit.text      = str(s.y)
-	distance_edit.text    = "5.0"
+	width_edit.text = str(s.x)
+	height_edit.text = str(s.y)
+	distance_edit.text = "5.0"
 
 func _apply_calibration():
 	var diag = float(screen_size_edit.text)
-	var w    = int(width_edit.text)
-	var h    = int(height_edit.text)
+	var w = int(width_edit.text)
+	var h = int(height_edit.text)
 	var dist = float(distance_edit.text)
 	vision_calc.set_screen_params(diag, w, h)
 	vision_calc.set_test_distance(dist)
-	screen_lbl.text   = "屏幕: %.1f\" %dx%d" % [diag, w, h]
+	screen_lbl.text = "屏幕: %.1f\" %dx%d" % [diag, w, h]
 	distance_lbl.text = "距离: %.2f 米" % dist
 	test_controller.force_refresh()
 
 # ── UI 更新 ─────────────────────────────────────────────────
 func _update_ui_display():
-	left_eye_data.text  = "左眼视力: %.2f" % level_manager.get_eye_vision("left")
+	left_eye_data.text = "左眼视力: %.2f" % level_manager.get_eye_vision("left")
 	right_eye_data.text = "右眼视力: %.2f" % level_manager.get_eye_vision("right")
 	var cur = level_manager.get_current_vision()
 	match current_mode:
-		"left":  current_vision_lbl.text = "当前视力: %.2f（左眼）" % cur
+		"left": current_vision_lbl.text = "当前视力: %.2f（左眼）" % cur
 		"right": current_vision_lbl.text = "当前视力: %.2f（右眼）" % cur
 		"both":
 			var n = "左眼" if is_testing_left else "右眼"
@@ -123,15 +125,15 @@ func _on_consecutive_updated(correct: int, wrong: int):
 	consecutive_lbl.text = "连续正确: %d  连续错误: %d" % [correct, wrong]
 
 func _on_answer_processed(is_correct: bool):
-	hint_label.text     = "✓ 正确" if is_correct else "✗ 错误"
+	hint_label.text = "✓ 正确" if is_correct else "✗ 错误"
 	hint_label.modulate = Color(0.4, 1.0, 0.4) if is_correct else Color(1.0, 0.4, 0.4)
 	_answer_feedback_timer = 0.7
 
 # ── 快捷键 ──────────────────────────────────────────────────
 func _setup_shortcuts():
-	_bind_key("answer_up",    [KEY_W, KEY_UP])
-	_bind_key("answer_down",  [KEY_S, KEY_DOWN])
-	_bind_key("answer_left",  [KEY_A, KEY_LEFT])
+	_bind_key("answer_up", [KEY_W, KEY_UP])
+	_bind_key("answer_down", [KEY_S, KEY_DOWN])
+	_bind_key("answer_left", [KEY_A, KEY_LEFT])
 	_bind_key("answer_right", [KEY_D, KEY_RIGHT])
 
 func _bind_key(action: String, keys: Array):
@@ -149,9 +151,9 @@ func _input(event: InputEvent):
 		return
 	if is_paused:
 		return
-	if Input.is_action_just_pressed("answer_up"):    _on_answer("up")
-	elif Input.is_action_just_pressed("answer_down"):  _on_answer("down")
-	elif Input.is_action_just_pressed("answer_left"):  _on_answer("left")
+	if Input.is_action_just_pressed("answer_up"): _on_answer("up")
+	elif Input.is_action_just_pressed("answer_down"): _on_answer("down")
+	elif Input.is_action_just_pressed("answer_left"): _on_answer("left")
 	elif Input.is_action_just_pressed("answer_right"): _on_answer("right")
 
 func _on_answer(dir: String):
@@ -176,7 +178,7 @@ func _on_mode_right():
 	_set_hint("请遮挡左眼，测试右眼")
 
 func _on_mode_both():
-	current_mode    = "both"
+	current_mode = "both"
 	is_testing_left = true
 	level_manager.switch_eye("left")
 	test_controller.force_refresh()
@@ -184,7 +186,7 @@ func _on_mode_both():
 	_set_hint("双眼依次：请先遮挡右眼，测试左眼")
 
 func _set_hint(msg: String):
-	hint_label.text     = msg
+	hint_label.text = msg
 	hint_label.modulate = Color(0.9, 0.8, 0.4)
 	_answer_feedback_timer = 3.0
 
@@ -196,7 +198,7 @@ func _on_reset_test():
 	consecutive_lbl.text = "连续正确: 0  连续错误: 0"
 
 func _on_pause_test():
-	is_paused      = !is_paused
+	is_paused = !is_paused
 	pause_btn.text = "继续测试" if is_paused else "暂停测试"
 
 func _on_fullscreen_focus():
@@ -218,7 +220,7 @@ func _on_show_result():
 	var lv = level_manager.get_eye_vision("left")
 	var rv = level_manager.get_eye_vision("right")
 
-	result_left_lbl.text  = "左眼视力: %.2f" % lv
+	result_left_lbl.text = "左眼视力: %.2f" % lv
 	result_right_lbl.text = "右眼视力: %.2f" % rv
 
 	# 刷新可用串口列表
@@ -239,7 +241,7 @@ func _refresh_port_list():
 		port_option.add_item("无可用串口")
 	else:
 		for p in ports:
-			port_option.add_item(p)
+			port_option.add_item(str(p)) # 强制转 String，防止插件返回 int
 
 func _update_connect_btn_text():
 	if printer_mgr.is_printer_connected():
