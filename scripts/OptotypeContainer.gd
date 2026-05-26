@@ -3,10 +3,11 @@ class_name OptotypeContainer
 
 # ── 外部读取：当前目标视标方向 ──────────────────────────────
 var target_direction: int = EyeChart.Direction.RIGHT
+var chart_color: Color = Color.WHITE
 
 # ── 内部状态 ────────────────────────────────────────────────
-var _charts: Array = []          # Array[EyeChart]
-var _positions: Array = []       # Array[Vector2] 每个视标的左上角坐标
+var _charts: Array = [] # Array[EyeChart]
+var _positions: Array = [] # Array[Vector2] 每个视标的左上角坐标
 var _target_idx: int = 0
 var _optotype_size: float = 100.0
 var _pending_build: bool = false
@@ -17,15 +18,23 @@ const BREATH_AMP: float = 3.0
 const BREATH_SPD: float = 2.5
 
 # 布局参数
-const MIN_MARGIN_PX: float = 15.0        # 最小边缘留白（像素）
+const MIN_MARGIN_PX: float = 15.0 # 最小边缘留白（像素）
 const DESIRED_MARGIN_RATIO: float = 0.03 # 期望留白占容器短边的比例（用于动态计算间距）
-const MIN_SPACING_PX: float = 30.0     # 最小间距（像素）
+const MIN_SPACING_PX: float = 30.0 # 最小间距（像素）
 
 # ── 公开接口 ────────────────────────────────────────────────
 
 func refresh(optotype_px: float):
 	_optotype_size = max(optotype_px, 20.0)
 	_pending_build = true
+
+func set_theme_color(color: Color):
+	chart_color = color
+	for chart in _charts:
+		if is_instance_valid(chart):
+			chart.draw_color = chart_color
+			chart.queue_redraw()
+	queue_redraw()
 
 # ── Godot 回调 ──────────────────────────────────────────────
 
@@ -46,10 +55,10 @@ func _draw():
 		return
 	var s = _optotype_size
 	var breath = sin(_breath_t) * BREATH_AMP
-	var r = s * 0.5 + 12.0 + breath   # 基础偏移从 6 增加到 12
+	var r = s * 0.5 + 12.0 + breath # 基础偏移从 6 增加到 12
 	var pos = _positions[_target_idx]
 	var center = pos + Vector2(s * 0.5, s * 0.5)
-	draw_arc(center, r, 0.0, TAU, 64, Color(1.0, 0.0, 0.0, 1.0), 10.0)  # 纯红，线宽 5
+	draw_arc(center, r, 0.0, TAU, 64, Color(1.0, 0.0, 0.0, 1.0), 10.0) # 纯红，线宽 5
 
 func _on_resized():
 	if _optotype_size > 0.0:
@@ -98,7 +107,7 @@ func _build():
 			var max_spacing_h = (container_h - 2 * MIN_MARGIN_PX - try_rows * s) / (try_rows - 1) if try_rows > 1 else INF
 			var possible_spacing = min(max_spacing_w, max_spacing_h)
 			if possible_spacing < MIN_SPACING_PX:
-				continue  # 即使最小间距也放不下
+				continue # 即使最小间距也放不下
 			# 实际间距取最大可能间距与最小间距之间，使用最大间距以充分利用空间
 			var actual_spacing = possible_spacing
 			# 验证实际宽高是否真的不超出
@@ -158,6 +167,7 @@ func _build():
 			add_child(chart)
 			chart.set_size_px(s)
 			chart.position = pos
+			chart.draw_color = chart_color
 			var random_dir = dirs[randi() % dirs.size()]
 			chart.set_direction(random_dir)
 			_charts.append(chart)
@@ -171,4 +181,3 @@ func _build():
 		target_direction = EyeChart.Direction.UP
 
 	queue_redraw()
-	

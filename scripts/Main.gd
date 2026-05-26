@@ -1,9 +1,26 @@
 extends Control
 
 # ── 节点引用 ────────────────────────────────────────────────
+@onready var background_rect: ColorRect = $Background
+@onready var left_panel: Panel = $HBoxContainer/LeftPanel
+@onready var right_panel: Panel = $HBoxContainer/RightPanel
 @onready var optotype_container: OptotypeContainer = \
 	$HBoxContainer/CenterContainer/EyeChartArea/OptotypeContainer
 
+@onready var title_label: Label = $HBoxContainer/LeftPanel/LeftPanelMargin/VBoxContainer/TitleLabel
+@onready var mode_label: Label = $HBoxContainer/LeftPanel/LeftPanelMargin/VBoxContainer/ModeSection/ModeLabel
+@onready var control_label: Label = $HBoxContainer/LeftPanel/LeftPanelMargin/VBoxContainer/ControlSection/ControlLabel
+@onready var theme_toggle_btn: Button = $HBoxContainer/LeftPanel/LeftPanelMargin/VBoxContainer/ControlSection/ThemeToggleBtn
+@onready var left_eye_btn: Button = $HBoxContainer/LeftPanel/LeftPanelMargin/VBoxContainer/ModeSection/ModeButtons/LeftEyeBtn
+@onready var right_eye_btn: Button = $HBoxContainer/LeftPanel/LeftPanelMargin/VBoxContainer/ModeSection/ModeButtons/RightEyeBtn
+@onready var both_eye_btn: Button = $HBoxContainer/LeftPanel/LeftPanelMargin/VBoxContainer/ModeSection/ModeButtons/BothEyeBtn
+@onready var reset_btn: Button = $HBoxContainer/LeftPanel/LeftPanelMargin/VBoxContainer/ControlSection/ResetBtn
+@onready var pause_btn: Button = $HBoxContainer/LeftPanel/LeftPanelMargin/VBoxContainer/ControlSection/PauseBtn
+@onready var fullscreen_focus_btn: Button = $HBoxContainer/LeftPanel/LeftPanelMargin/VBoxContainer/ControlSection/FullscreenFocusBtn
+@onready var calibrate_btn: Button = $HBoxContainer/LeftPanel/LeftPanelMargin/VBoxContainer/ControlSection/CalibrateBtn
+@onready var result_btn: Button = $HBoxContainer/LeftPanel/LeftPanelMargin/VBoxContainer/ControlSection/ResultBtn
+
+@onready var info_label: Label = $HBoxContainer/RightPanel/RightPanelMargin/VBoxContainer/InfoLabel
 @onready var left_eye_data: Label = $HBoxContainer/RightPanel/RightPanelMargin/VBoxContainer/LeftEyeData
 @onready var right_eye_data: Label = $HBoxContainer/RightPanel/RightPanelMargin/VBoxContainer/RightEyeData
 @onready var current_vision_lbl: Label = $HBoxContainer/RightPanel/RightPanelMargin/VBoxContainer/CurrentVision
@@ -11,7 +28,6 @@ extends Control
 @onready var distance_lbl: Label = $HBoxContainer/RightPanel/RightPanelMargin/VBoxContainer/DistanceInfo
 @onready var screen_lbl: Label = $HBoxContainer/RightPanel/RightPanelMargin/VBoxContainer/ScreenInfo
 @onready var hint_label: Label = $HBoxContainer/RightPanel/RightPanelMargin/VBoxContainer/HintLabel
-@onready var pause_btn: Button = $HBoxContainer/LeftPanel/LeftPanelMargin/VBoxContainer/ControlSection/PauseBtn
 
 @onready var calibration_popup: PopupPanel = $CalibrationPopup
 @onready var result_popup: PopupPanel = $ResultPopup
@@ -29,24 +45,75 @@ extends Control
 # 结果弹窗内的子节点
 @onready var result_left_lbl: Label = $ResultPopup/ResultVBox/ResultLeftEye
 @onready var result_right_lbl: Label = $ResultPopup/ResultVBox/ResultRightEye
+@onready var result_title_lbl: Label = $ResultPopup/ResultVBox/ResultTitle
+@onready var printer_label: Label = $ResultPopup/ResultVBox/PrinterLabel
 @onready var print_btn: Button = $ResultPopup/ResultVBox/PrintBtn
 @onready var print_status_lbl: Label = $ResultPopup/ResultVBox/PrintStatusLabel
+
+@onready var calibration_screen_size_lbl: Label = $CalibrationPopup/CalibrationVBox/ScreenSizeInput/ScreenSizeLabel
+@onready var calibration_resolution_lbl: Label = $CalibrationPopup/CalibrationVBox/ResolutionInput/ResolutionLabel
+@onready var calibration_distance_lbl: Label = $CalibrationPopup/CalibrationVBox/DistanceInput/DistanceLabel
+@onready var calibration_confirm_btn: Button = $CalibrationPopup/CalibrationVBox/CalibrationConfirm
 
 # 打印机串口选择（弹窗内）
 @onready var port_option: OptionButton = $ResultPopup/ResultVBox/PortHBox/PortOption
 @onready var connect_btn: Button = $ResultPopup/ResultVBox/PortHBox/ConnectBtn
+@onready var result_close_btn: Button = $ResultPopup/ResultVBox/ResultCloseBtn
 
 # ── 管理器 ──────────────────────────────────────────────────
 var vision_calc: VisionCalculator
 var level_manager: VisionLevelManager
 var test_controller: TestController
-var printer_mgr: PrinterManager # ← 新增
+var printer_mgr: PrinterManager
 
 # ── 状态 ────────────────────────────────────────────────────
 var is_paused: bool = false
 var current_mode: String = "left"
 var is_testing_left: bool = true
 var _answer_feedback_timer: float = 0.0
+var current_theme: String = "dark"
+
+const DARK_THEME := {
+	"background": Color(0.04, 0.04, 0.06, 1.0),
+	"panel_bg": Color(0.08, 0.08, 0.10, 1.0),
+	"panel_border": Color(0.22, 0.22, 0.28, 1.0),
+	"popup_bg": Color(0.09, 0.09, 0.12, 1.0),
+	"popup_border": Color(0.25, 0.25, 0.35, 1.0),
+	"text": Color(0.88, 0.88, 0.95, 1.0),
+	"muted": Color(0.66, 0.66, 0.80, 1.0),
+	"accent": Color(0.55, 0.85, 0.85, 1.0),
+	"success": Color(0.50, 0.90, 0.60, 1.0),
+	"warning": Color(0.90, 0.80, 0.45, 1.0),
+	"chart": Color.WHITE,
+	"button_text": Color(0.90, 0.90, 0.95, 1.0),
+	"toggle_bg": Color(0.14, 0.14, 0.20, 1.0),
+	"toggle_border": Color(0.35, 0.35, 0.45, 1.0),
+	"button_bg": Color(0.15, 0.15, 0.20, 1.0),
+	"button_border": Color(0.35, 0.35, 0.45, 1.0),
+	"button_hover": Color(0.22, 0.22, 0.28, 1.0),
+	"button_pressed": Color(0.10, 0.10, 0.14, 1.0)
+}
+
+const LIGHT_THEME := {
+	"background": Color(0.96, 0.97, 0.99, 1.0),
+	"panel_bg": Color(0.99, 1.0, 1.0, 1.0),
+	"panel_border": Color(0.78, 0.82, 0.90, 1.0),
+	"popup_bg": Color(0.98, 0.99, 1.0, 1.0),
+	"popup_border": Color(0.80, 0.86, 0.94, 1.0),
+	"text": Color(0.10, 0.12, 0.16, 1.0),
+	"muted": Color(0.42, 0.46, 0.56, 1.0),
+	"accent": Color(0.08, 0.71, 0.71, 1.0),
+	"success": Color(0.02, 0.58, 0.28, 1.0),
+	"warning": Color(0.85, 0.58, 0.14, 1.0),
+	"chart": Color.BLACK,
+	"button_text": Color(0.10, 0.12, 0.16, 1.0),
+	"toggle_bg": Color(0.90, 0.94, 0.98, 1.0),
+	"toggle_border": Color(0.70, 0.78, 0.88, 1.0),
+	"button_bg": Color(0.95, 0.97, 1.0, 1.0),
+	"button_border": Color(0.70, 0.78, 0.88, 1.0),
+	"button_hover": Color(0.89, 0.93, 0.98, 1.0),
+	"button_pressed": Color(0.82, 0.88, 0.95, 1.0)
+}
 
 # ── 初始化 ──────────────────────────────────────────────────
 func _ready():
@@ -75,9 +142,11 @@ func _ready():
 	# 打印相关按钮
 	print_btn.pressed.connect(_on_print_result)
 	connect_btn.pressed.connect(_on_toggle_port_connect)
+	theme_toggle_btn.pressed.connect(_on_theme_toggle_pressed)
 
 	_load_default_calibration()
 	_apply_calibration()
+	_apply_theme(current_theme)
 	_update_ui_display()
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
@@ -117,6 +186,165 @@ func _update_ui_display():
 		"both":
 			var n = "左眼" if is_testing_left else "右眼"
 			current_vision_lbl.text = "当前视力: %.2f（%s）" % [cur, n]
+
+func _apply_theme(theme_name: String):
+	current_theme = theme_name
+	var palette = LIGHT_THEME if theme_name == "light" else DARK_THEME
+
+	background_rect.color = palette["background"]
+	left_panel.get_theme_stylebox("panel").bg_color = palette["panel_bg"]
+	left_panel.get_theme_stylebox("panel").border_color = palette["panel_border"]
+	right_panel.get_theme_stylebox("panel").bg_color = palette["panel_bg"]
+	right_panel.get_theme_stylebox("panel").border_color = palette["panel_border"]
+
+	_set_label_color(title_label, palette["text"])
+	_set_label_color(mode_label, palette["text"])
+	_set_label_color(control_label, palette["text"])
+	_set_label_color(info_label, palette["text"])
+	_set_label_color(left_eye_data, palette["text"])
+	_set_label_color(right_eye_data, palette["text"])
+	_set_label_color(current_vision_lbl, palette["success"])
+	_set_label_color(consecutive_lbl, palette["muted"])
+	_set_label_color(distance_lbl, palette["muted"])
+	_set_label_color(screen_lbl, palette["muted"])
+	_set_label_color(hint_label, palette["warning"])
+	_set_label_color(result_title_lbl, palette["text"])
+	_set_label_color(result_left_lbl, palette["text"])
+	_set_label_color(result_right_lbl, palette["text"])
+	_set_label_color(printer_label, palette["muted"])
+	_set_label_color(print_status_lbl, palette["success"])
+	_set_label_color(calibration_screen_size_lbl, palette["text"])
+	_set_label_color(calibration_resolution_lbl, palette["text"])
+	_set_label_color(calibration_distance_lbl, palette["text"])
+
+	_set_button_text_color(left_eye_btn, palette["button_text"])
+	_set_button_text_color(right_eye_btn, palette["button_text"])
+	_set_button_text_color(both_eye_btn, palette["button_text"])
+	_set_button_text_color(reset_btn, palette["button_text"])
+	_set_button_text_color(pause_btn, palette["button_text"])
+	_set_button_text_color(fullscreen_focus_btn, palette["button_text"])
+	_set_button_text_color(calibrate_btn, palette["button_text"])
+	_set_button_text_color(result_btn, palette["button_text"])
+	_set_button_text_color(theme_toggle_btn, palette["button_text"])
+	_set_button_text_color(print_btn, palette["button_text"])
+	_set_button_text_color(connect_btn, palette["button_text"])
+	_set_button_text_color(calibration_confirm_btn, palette["button_text"])
+	_set_button_text_color(result_close_btn, palette["button_text"])
+
+	var theme_btn_style = _build_button_style(palette["toggle_bg"], palette["toggle_border"], 999)
+	var theme_hover_style = _build_button_style(palette["toggle_bg"], palette["toggle_border"], 999)
+	var theme_pressed_style = _build_button_style(palette["toggle_bg"], palette["toggle_border"], 999)
+	theme_btn_style.bg_color = palette["toggle_bg"]
+	theme_hover_style.bg_color = palette["toggle_bg"]
+	theme_pressed_style.bg_color = palette["toggle_bg"]
+	theme_toggle_btn.add_theme_stylebox_override("normal", theme_btn_style)
+	theme_toggle_btn.add_theme_stylebox_override("hover", theme_hover_style)
+	theme_toggle_btn.add_theme_stylebox_override("pressed", theme_pressed_style)
+	theme_toggle_btn.text = "白天模式" if theme_name == "dark" else "深色模式"
+
+	var norm_btn_style = _build_button_style(palette["button_bg"], palette["button_border"], 8)
+	var hover_btn_style = _build_button_style(palette["button_hover"], palette["button_border"], 8)
+	var pressed_btn_style = _build_button_style(palette["button_pressed"], palette["button_border"], 8)
+	for button in [left_eye_btn, right_eye_btn, both_eye_btn, reset_btn, pause_btn, fullscreen_focus_btn, calibrate_btn, result_btn, print_btn, connect_btn, calibration_confirm_btn, result_close_btn]:
+		button.add_theme_stylebox_override("normal", norm_btn_style)
+		button.add_theme_stylebox_override("hover", hover_btn_style)
+		button.add_theme_stylebox_override("pressed", pressed_btn_style)
+		_set_button_text_color(button, palette["button_text"])
+
+	var direction_style = _build_button_style(palette["button_bg"], palette["button_border"], 8)
+	var direction_hover_style = _build_button_style(palette["button_hover"], palette["button_border"], 8)
+	var direction_pressed_style = _build_button_style(palette["button_pressed"], palette["button_border"], 8)
+	for button in [up_btn, down_btn, left_btn, right_btn]:
+		button.add_theme_stylebox_override("normal", direction_style)
+		button.add_theme_stylebox_override("hover", direction_hover_style)
+		button.add_theme_stylebox_override("pressed", direction_pressed_style)
+		_set_button_text_color(button, palette["button_text"])
+
+	var popup_style = _build_panel_style(palette["popup_bg"], palette["popup_border"], 12)
+	popup_style.content_margin_left = 12
+	popup_style.content_margin_right = 12
+	popup_style.content_margin_top = 12
+	popup_style.content_margin_bottom = 12
+	calibration_popup.add_theme_stylebox_override("panel", popup_style)
+	result_popup.add_theme_stylebox_override("panel", popup_style)
+
+	_apply_input_theme(palette)
+	optotype_container.set_theme_color(palette["chart"])
+	optotype_container.queue_redraw()
+
+func _on_theme_toggle_pressed():
+	_apply_theme("light" if current_theme == "dark" else "dark")
+
+func _build_button_style(bg_color: Color, border_color: Color, radius: int) -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+	style.bg_color = bg_color
+	style.border_width_left = 2
+	style.border_width_top = 2
+	style.border_width_right = 2
+	style.border_width_bottom = 2
+	style.border_color = border_color
+	style.corner_radius_top_left = radius
+	style.corner_radius_top_right = radius
+	style.corner_radius_bottom_left = radius
+	style.corner_radius_bottom_right = radius
+	return style
+
+func _build_panel_style(bg_color: Color, border_color: Color, radius: int) -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+	style.bg_color = bg_color
+	style.border_width_left = 1
+	style.border_width_top = 1
+	style.border_width_right = 1
+	style.border_width_bottom = 1
+	style.border_color = border_color
+	style.corner_radius_top_left = radius
+	style.corner_radius_top_right = radius
+	style.corner_radius_bottom_left = radius
+	style.corner_radius_bottom_right = radius
+	return style
+
+func _set_label_color(label: Label, color: Color) -> void:
+	label.add_theme_color_override("font_color", color)
+
+func _set_button_text_color(button: Button, color: Color) -> void:
+	button.add_theme_color_override("font_color", color)
+	button.add_theme_color_override("font_hover_color", color)
+	button.add_theme_color_override("font_pressed_color", color)
+	button.add_theme_color_override("font_focus_color", color)
+	button.add_theme_color_override("font_disabled_color", color)
+
+func _apply_input_theme(palette: Dictionary) -> void:
+	for edit in [screen_size_edit, width_edit, height_edit, distance_edit]:
+		edit.add_theme_color_override("font_color", palette["text"])
+		edit.add_theme_color_override("font_selected_color", palette["text"])
+		edit.add_theme_color_override("selection_color", palette["accent"].darkened(0.4))
+		edit.add_theme_color_override("caret_color", palette["text"])
+		edit.add_theme_stylebox_override("normal", _build_input_style(palette["panel_bg"], palette["panel_border"]))
+		edit.add_theme_stylebox_override("focus", _build_input_style(palette["panel_bg"], palette["accent"]))
+
+	port_option.add_theme_color_override("font_color", palette["text"])
+	port_option.add_theme_color_override("font_selected_color", palette["text"])
+	port_option.add_theme_color_override("font_hover_color", palette["text"])
+	port_option.add_theme_color_override("font_pressed_color", palette["text"])
+	port_option.add_theme_color_override("font_disabled_color", palette["muted"])
+
+func _build_input_style(bg_color: Color, border_color: Color) -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+	style.bg_color = bg_color
+	style.border_width_left = 1
+	style.border_width_top = 1
+	style.border_width_right = 1
+	style.border_width_bottom = 1
+	style.border_color = border_color
+	style.corner_radius_top_left = 8
+	style.corner_radius_top_right = 8
+	style.corner_radius_bottom_left = 8
+	style.corner_radius_bottom_right = 8
+	style.content_margin_left = 8
+	style.content_margin_right = 8
+	style.content_margin_top = 6
+	style.content_margin_bottom = 6
+	return style
 
 func _on_vision_updated(_v: float):
 	_update_ui_display()

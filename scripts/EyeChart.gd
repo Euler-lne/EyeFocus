@@ -5,6 +5,7 @@ enum Direction {UP, DOWN, LEFT, RIGHT}
 
 var direction: int = Direction.RIGHT
 var size_px: float = 100.0
+var draw_color: Color = Color.WHITE
 
 func set_direction(dir: int):
 	direction = dir
@@ -37,12 +38,12 @@ func _draw():
 	var oy = - half
 
 	# 竖笔（左侧）
-	draw_rect(Rect2(ox, oy, stroke, s), c)
+	draw_rect(Rect2(ox, oy, stroke, s), draw_color)
 	# 上横臂
-	draw_rect(Rect2(ox, oy, s, stroke), c)
+	draw_rect(Rect2(ox, oy, s, stroke), draw_color)
 	# 中横臂
-	draw_rect(Rect2(ox, oy + half - stroke * 0.5, s, stroke), c)
+	draw_rect(Rect2(ox, oy + half - stroke * 0.5, s, stroke), draw_color)
 	# 下横臂
-	draw_rect(Rect2(ox, oy + s - stroke, s, stroke), c)
+	draw_rect(Rect2(ox, oy + s - stroke, s, stroke), draw_color)
 
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)

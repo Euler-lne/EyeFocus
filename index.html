@@ -140,6 +140,31 @@
 			transform: none
 		}
 
+		.theme-toggle {
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+			padding: 7px 14px;
+			border-radius: 999px;
+			border: 1px solid rgba(94, 207, 207, .18);
+			background: rgba(94, 207, 207, .08);
+			color: #5ecfcf;
+			font-size: .82rem;
+			font-weight: 700;
+			cursor: pointer;
+			transition: all .25s ease;
+		}
+
+		.theme-toggle:hover {
+			background: rgba(94, 207, 207, .14);
+			transform: translateY(-1px)
+		}
+
+		.theme-toggle:focus-visible {
+			outline: 2px solid rgba(94, 207, 207, .45);
+			outline-offset: 2px
+		}
+
 		/* ── Hero ── */
 		.hero {
 			min-height: 100vh;
@@ -905,6 +930,215 @@
 		}
 
 		/* ── Responsive ── */
+		body[data-theme="light"] {
+			background: #f5f7fb;
+			color: #111827
+		}
+
+		body[data-theme="light"] a {
+			color: #0f8f8f
+		}
+
+		body[data-theme="light"] a:hover {
+			color: #0a7272
+		}
+
+		body[data-theme="light"] ::selection {
+			background: rgba(15, 143, 143, .25);
+			color: #0b1220
+		}
+
+		body[data-theme="light"] nav {
+			background: rgba(255, 255, 255, .9);
+			border-bottom: 1px solid rgba(15, 23, 42, .06)
+		}
+
+		body[data-theme="light"] .nav-logo,
+		body[data-theme="light"] .nav-logo span {
+			color: #111827
+		}
+
+		body[data-theme="light"] nav ul a {
+			color: #4b5563
+		}
+
+		body[data-theme="light"] nav ul a:hover {
+			color: #111827
+		}
+
+		body[data-theme="light"] .nav-gh,
+		body[data-theme="light"] .theme-toggle {
+			background: rgba(15, 143, 143, .08);
+			border-color: rgba(15, 143, 143, .18);
+			color: #0f8f8f
+		}
+
+		body[data-theme="light"] .nav-gh:hover,
+		body[data-theme="light"] .theme-toggle:hover {
+			background: rgba(15, 143, 143, .14)
+		}
+
+		body[data-theme="light"] .hero::before {
+			background:
+				radial-gradient(ellipse 700px 500px at 20% 30%, rgba(15, 143, 143, .12), transparent),
+				radial-gradient(ellipse 600px 600px at 80% 65%, rgba(99, 102, 241, .08), transparent)
+		}
+
+		body[data-theme="light"] .hero::after {
+			background: repeating-linear-gradient(90deg,
+					transparent, transparent 80px,
+					rgba(15, 143, 143, .05) 80px, rgba(15, 143, 143, .05) 81px)
+		}
+
+		body[data-theme="light"] .hero-e {
+			background: linear-gradient(160deg, rgba(15, 143, 143, .18) 0%, rgba(15, 23, 42, .05) 60%);
+			-webkit-background-clip: text;
+			-webkit-text-fill-color: transparent;
+			background-clip: text
+		}
+
+		body[data-theme="light"] .hero-badge {
+			background: rgba(15, 143, 143, .08);
+			border-color: rgba(15, 143, 143, .18);
+			color: #0f8f8f
+		}
+
+		body[data-theme="light"] .hero h1 {
+			background: linear-gradient(140deg, #111827 20%, #0f8f8f 75%);
+			-webkit-background-clip: text;
+			-webkit-text-fill-color: transparent;
+			background-clip: text
+		}
+
+		body[data-theme="light"] .hero p,
+		body[data-theme="light"] .hero-stat .lbl,
+		body[data-theme="light"] .section-header p,
+		body[data-theme="light"] .feature-card p,
+		body[data-theme="light"] .step p,
+		body[data-theme="light"] .key-item span,
+		body[data-theme="light"] .arch-card p,
+		body[data-theme="light"] .tech-table td {
+			color: #4b5563
+		}
+
+		body[data-theme="light"] .hero-stat .val,
+		body[data-theme="light"] .section-header h2,
+		body[data-theme="light"] .feature-card h3,
+		body[data-theme="light"] .step h3,
+		body[data-theme="light"] .arch-card h4,
+		body[data-theme="light"] .key-item kbd {
+			color: #111827
+		}
+
+		body[data-theme="light"] .section-header h2 {
+			background: linear-gradient(135deg, #111827, #4b5563);
+			-webkit-background-clip: text;
+			-webkit-text-fill-color: transparent;
+			background-clip: text;
+		}
+
+		body[data-theme="light"] .features,
+		body[data-theme="light"] .print-section,
+		body[data-theme="light"] .screenshot,
+		body[data-theme="light"] .how,
+		body[data-theme="light"] .arch,
+		body[data-theme="light"] .tech,
+		body[data-theme="light"] footer {
+			background: #f5f7fb
+		}
+
+		body[data-theme="light"] .feature-card,
+		body[data-theme="light"] .step,
+		body[data-theme="light"] .key-item,
+		body[data-theme="light"] .arch-card,
+		body[data-theme="light"] .tech-table,
+		body[data-theme="light"] .print-preview {
+			background: #ffffff
+		}
+
+		body[data-theme="light"] .feature-card,
+		body[data-theme="light"] .step,
+		body[data-theme="light"] .key-item,
+		body[data-theme="light"] .arch-card,
+		body[data-theme="light"] .tech-table,
+		body[data-theme="light"] .print-preview,
+		body[data-theme="light"] .screenshot-frame {
+			border-color: rgba(15, 23, 42, .08)
+		}
+
+		body[data-theme="light"] .feature-card:hover,
+		body[data-theme="light"] .step:hover,
+		body[data-theme="light"] .arch-card:hover {
+			background: rgba(15, 143, 143, .06)
+		}
+
+		body[data-theme="light"] .feature-icon {
+			background: rgba(15, 143, 143, .09)
+		}
+
+		body[data-theme="light"] .print-preview {
+			box-shadow: 0 16px 44px rgba(15, 23, 42, .08)
+		}
+
+		body[data-theme="light"] .print-preview .title,
+		body[data-theme="light"] .print-preview .vision-val {
+			color: #0f8f8f
+		}
+
+		body[data-theme="light"] .print-preview .label,
+		body[data-theme="light"] .print-preview .sub,
+		body[data-theme="light"] .print-preview .footer {
+			color: #4b5563
+		}
+
+		body[data-theme="light"] .print-preview .value,
+		body[data-theme="light"] .print-preview .advice {
+			color: #111827
+		}
+
+		body[data-theme="light"] .screenshot-frame:hover {
+			box-shadow: 0 28px 90px rgba(15, 23, 42, .1), 0 0 0 1px rgba(15, 143, 143, .18)
+		}
+
+		body[data-theme="light"] .key-item kbd {
+			background: rgba(15, 23, 42, .05);
+			border-color: rgba(15, 23, 42, .08)
+		}
+
+		body[data-theme="light"] .arch-formula {
+			background: #ffffff;
+			border-color: rgba(15, 143, 143, .14);
+			color: #334155
+		}
+
+		body[data-theme="light"] .tech-table tr:hover {
+			background: rgba(15, 143, 143, .05)
+		}
+
+		body[data-theme="light"] .tech-table td:first-child {
+			background: rgba(15, 23, 42, .03);
+			color: #111827
+		}
+
+		body[data-theme="light"] footer {
+			border-top-color: rgba(15, 23, 42, .08);
+			color: #6b7280
+		}
+
+		body[data-theme="light"] footer strong {
+			color: #374151
+		}
+
+		body[data-theme="light"] .btn-outline {
+			background: transparent;
+			color: #111827;
+			border-color: rgba(15, 23, 42, .12)
+		}
+
+		body[data-theme="light"] .btn-outline:hover {
+			background: rgba(15, 23, 42, .04)
+		}
+
 		@media(max-width:768px) {
 			nav {
 				padding: 0 20px
@@ -912,6 +1146,11 @@
 
 			nav ul {
 				display: none
+			}
+
+			.theme-toggle {
+				padding: 7px 12px;
+				font-size: .78rem
 			}
 
 			.hero {
@@ -960,6 +1199,8 @@
 			<li><a href="#arch">架构</a></li>
 			<li><a href="#tech">技术</a></li>
 		</ul>
+		<button id="theme-toggle" class="theme-toggle" type="button" aria-label="切换主题" aria-pressed="false">🌙
+			黑夜模式</button>
 		<a href="https://github.com/sybupt/EyeFocus" class="nav-gh" target="_blank">
 			<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
 				<path
@@ -1265,6 +1506,17 @@
 	</footer>
 
 	<script>
+		const themeToggle = document.getElementById('theme-toggle');
+		const storedTheme = localStorage.getItem('eyefocus-theme');
+
+		const applyTheme = (theme) => {
+			document.body.dataset.theme = theme;
+			document.documentElement.style.colorScheme = theme;
+			themeToggle.setAttribute('aria-pressed', String(theme === 'light'));
+			themeToggle.textContent = theme === 'light' ? '☀️ 白天模式' : '🌙 黑夜模式';
+			localStorage.setItem('eyefocus-theme', theme);
+		};
+
 		const obs = new IntersectionObserver(
 			entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible') }),
 			{ threshold: .1, rootMargin: '0px 0px -50px 0px' }
@@ -1278,6 +1530,13 @@
 				document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
 			});
 		});
+
+		themeToggle.addEventListener('click', () => {
+			const nextTheme = document.body.dataset.theme === 'light' ? 'dark' : 'light';
+			applyTheme(nextTheme);
+		});
+
+		applyTheme(storedTheme === 'light' ? 'light' : 'dark');
 	</script>
 </body>
 

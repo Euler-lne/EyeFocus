@@ -147,6 +147,11 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "测试控制"
 
+[node name="ThemeToggleBtn" type="Button" parent="HBoxContainer/LeftPanel/LeftPanelMargin/VBoxContainer/ControlSection" unique_id=471289250]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "🌙 深色模式"
+
 [node name="ResetBtn" type="Button" parent="HBoxContainer/LeftPanel/LeftPanelMargin/VBoxContainer/ControlSection" unique_id=1165849687]
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
@@ -248,6 +253,7 @@ theme_override_font_sizes/font_size = 15
 autowrap_mode = 3
 
 [node name="CalibrationPopup" type="PopupPanel" parent="." unique_id=1135763668]
+oversampling_override = 1.0
 size = Vector2i(400, 320)
 
 [node name="CalibrationVBox" type="VBoxContainer" parent="CalibrationPopup" unique_id=1266576917]
@@ -256,8 +262,8 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 4.0
 offset_top = 4.0
-offset_right = 396.0
-offset_bottom = 316.0
+offset_right = -4.0
+offset_bottom = -4.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -373,7 +379,7 @@ text = "连接"
 [node name="PrintBtn" type="Button" parent="ResultPopup/ResultVBox" unique_id=827229989]
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
-text = "🖨  打印结果"
+text = "打印结果"
 
 [node name="PrintStatusLabel" type="Label" parent="ResultPopup/ResultVBox" unique_id=1188239978]
 layout_mode = 2
