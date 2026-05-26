@@ -16,7 +16,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 
 config/name="EyeFocus"
 config/description="专业视力自测工具 - 医院标准对数视力表"
-run/main_scene="res://scenes/Main.tscn"
+run/main_scene="uid://c8yh5jiifqwsx"
 config/features=PackedStringArray("4.6")
 config/icon="res://icon.svg"
 
