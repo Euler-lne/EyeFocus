@@ -867,6 +867,86 @@
 			color: #5ecfcf
 		}
 
+		.notice-card {
+			background: rgba(255, 255, 255, .03);
+			border: 1px solid rgba(94, 207, 207, .12);
+			border-radius: 16px;
+			padding: 28px 24px;
+			margin: 0 auto;
+			max-width: 1080px;
+			color: #c0c0d0;
+		}
+
+		.notice-title {
+			font-size: 1rem;
+			font-weight: 700;
+			color: #5ecfcf;
+			margin-bottom: 18px;
+		}
+
+		.notice-list {
+			display: grid;
+			gap: 14px;
+			list-style: none;
+			padding: 0;
+			margin: 0;
+		}
+
+		.notice-list li {
+			display: flex;
+			gap: 12px;
+			align-items: flex-start;
+			font-size: .95rem;
+			line-height: 1.75;
+			color: #d0d0e0;
+		}
+
+		.notice-download {
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			justify-content: space-between;
+			gap: 16px;
+			margin-top: 24px;
+			padding: 20px 20px 18px;
+			border-radius: 14px;
+			background: rgba(94, 207, 207, .05);
+			border: 1px solid rgba(94, 207, 207, .12);
+		}
+
+		.notice-download p {
+			margin: 0;
+			font-size: .95rem;
+			color: #c0c0d0;
+			max-width: 760px;
+		}
+
+		.notice-download .btn-outline {
+			padding: 11px 18px;
+			border-radius: 8px;
+		}
+
+		.notice-list li::before {
+			content: "•";
+			color: #5ecfcf;
+			font-weight: 700;
+			line-height: 1.2;
+		}
+
+		body[data-theme="light"] .notice-card {
+			background: #ffffff;
+			border-color: rgba(15, 143, 143, .14);
+			color: #334155;
+		}
+
+		body[data-theme="light"] .notice-title {
+			color: #0f8f8f;
+		}
+
+		body[data-theme="light"] .notice-list li {
+			color: #475569;
+		}
+
 		/* ── Footer ── */
 		footer {
 			text-align: center;
@@ -1218,9 +1298,11 @@
 		<h1>EyeFocus</h1>
 		<p>基于物理精确计算的专业视力自测工具。将标准对数视力表数字化，在屏幕上实现准确可靠的视力测量，支持热敏打印机输出报告。</p>
 		<div class="hero-actions">
-			<a href="realse/web/EyeFocus.html" class="btn btn-primary" target="_blank" rel="noopener noreferrer">在线体验</a>
+			<a href="realse/web/EyeFocus.html" class="btn btn-primary" target="_blank"
+				rel="noopener noreferrer">在线体验</a>
 			<a href="#features" class="btn btn-outline">了解特性</a>
-			<a href="https://github.com/sybupt/EyeFocus" class="btn btn-outline" target="_blank" rel="noopener noreferrer">GitHub 源码</a>
+			<a href="https://github.com/sybupt/EyeFocus" class="btn btn-outline" target="_blank"
+				rel="noopener noreferrer">GitHub 源码</a>
 		</div>
 		<div class="hero-stats">
 			<div class="hero-stat">
@@ -1347,7 +1429,7 @@
 				<p>深色极简风格，三分栏横屏布局，专注视力测试</p>
 			</div>
 			<div class="screenshot-frame reveal">
-				<img src="imgs/screenshot.png" alt="EyeFocus 界面截图">
+				<img id="screenshot-img" src="imgs/screenshot_dark.png" alt="EyeFocus 界面截图">
 			</div>
 		</div>
 	</section>
@@ -1501,6 +1583,34 @@
 		</div>
 	</section>
 
+	<!-- Web warning section -->
+	<section id="warning" class="tech">
+		<div class="section-inner">
+			<div class="section-header reveal">
+				<h2>网页版注意事项</h2>
+				<p>浏览器版使用时请务必参考以下说明，确保参数校准准确并获得更稳定的测试体验。</p>
+			</div>
+			<div class="notice-card reveal">
+				<div class="notice-title">⚠️ 网页版使用限制</div>
+				<ul class="notice-list">
+					<li>手动校准屏幕参数：浏览器无法自动获取显示器物理尺寸（英寸），请用尺子测量屏幕可视区域对角线后，在“参数校准”面板中输入显示器尺寸和当前屏幕分辨率（宽×高）。</li>
+					<li>浏览器窗口变化后需要重校准：当全屏、缩放、切换显示器或调整窗口大小时，视标物理尺寸会失效，请重新输入分辨率并点击确认。</li>
+					<li>不支持打印机：网页版受浏览器安全限制，无法连接串口打印机。如需使用“打印视力报告”功能，请下载 Windows 桌面版。</li>
+					<li>推荐使用 Windows 桌面版：桌面版支持完整功能，包括打印机、自动保存参数、更稳定的视标显示。</li>
+					<li>测试距离建议为 5 米，若实际距离较短请在“参数校准”中如实填写。</li>
+					<li>视线应垂直于屏幕中心，避免角度偏差。</li>
+					<li>确保屏幕亮度适中、环境照明均匀（约 300 lux）。</li>
+					<li>本工具仅供筛查参考，不能替代专业眼科检查。</li>
+				</ul>
+				<div class="notice-download">
+					<p>如果想获得完整桌面版体验，请下载并在 Windows 上运行 EyeFocus。</p>
+					<a href="realse/windows/EyeFocus.7z" class="btn btn-outline" target="_blank"
+						rel="noopener noreferrer">Windows 桌面版下载 (推荐)</a>
+				</div>
+			</div>
+		</div>
+	</section>
+
 	<!-- Footer -->
 	<footer>
 		<p>EyeFocus &mdash; <strong>让视力自测更专业</strong></p>
@@ -1510,6 +1620,7 @@
 	<script>
 		const themeToggle = document.getElementById('theme-toggle');
 		const storedTheme = localStorage.getItem('eyefocus-theme');
+		const screenshotImg = document.getElementById('screenshot-img');
 
 		const applyTheme = (theme) => {
 			document.body.dataset.theme = theme;
@@ -1517,6 +1628,9 @@
 			themeToggle.setAttribute('aria-pressed', String(theme === 'light'));
 			themeToggle.textContent = theme === 'light' ? '☀️ 白天模式' : '🌙 黑夜模式';
 			localStorage.setItem('eyefocus-theme', theme);
+			if (screenshotImg) {
+				screenshotImg.src = theme === 'light' ? 'imgs/screenshot_light.png' : 'imgs/screenshot_dark.png';
+			}
 		};
 
 		const obs = new IntersectionObserver(
