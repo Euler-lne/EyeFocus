@@ -19,31 +19,38 @@ func set_size_px(s: float):
 
 func _draw():
 	var s = size_px
-	var center = Vector2(s * 0.5, s * 0.5)
-	var stroke = s / 5.0
-	var half = s * 0.5
+	var cell = s / 5.0  # 每个栅格边长（1/5 总边长）
+	var color = draw_color
 
-	# 根据方向旋转角度：基准是"开口朝右"
-	var angle = 0.0
 	match direction:
-		Direction.RIGHT: angle = 0.0
-		Direction.LEFT: angle = PI
-		Direction.UP: angle = - PI * 0.5
-		Direction.DOWN: angle = PI * 0.5
+		# 开口向右（基准方向）
+		Direction.RIGHT:
+			# 竖线在左，三横向右，占满整个高度
+			draw_rect(Rect2(0, 0, cell, s), color)
+			draw_rect(Rect2(0, 0, s, cell), color)
+			draw_rect(Rect2(0, cell * 2, s, cell), color)
+			draw_rect(Rect2(0, s - cell, s, cell), color)
 
-	draw_set_transform(center, angle, Vector2.ONE)
+		# 开口向左
+		Direction.LEFT:
+			# 竖线在右，三横向左，占满整个高度
+			draw_rect(Rect2(s - cell, 0, cell, s), color)
+			draw_rect(Rect2(0, 0, s, cell), color)
+			draw_rect(Rect2(0, cell * 2, s, cell), color)
+			draw_rect(Rect2(0, s - cell, s, cell), color)
 
-	var c = Color.WHITE
-	var ox = - half
-	var oy = - half
+		# 开口向上
+		Direction.UP:
+			# 横线在下，三竖向上，占满整个宽度
+			draw_rect(Rect2(0, s - cell, s, cell), color)
+			draw_rect(Rect2(0, 0, cell, s), color)
+			draw_rect(Rect2(cell * 2, 0, cell, s), color)
+			draw_rect(Rect2(s - cell, 0, cell, s), color)
 
-	# 竖笔（左侧）
-	draw_rect(Rect2(ox, oy, stroke, s), draw_color)
-	# 上横臂
-	draw_rect(Rect2(ox, oy, s, stroke), draw_color)
-	# 中横臂
-	draw_rect(Rect2(ox, oy + half - stroke * 0.5, s, stroke), draw_color)
-	# 下横臂
-	draw_rect(Rect2(ox, oy + s - stroke, s, stroke), draw_color)
-
-	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+		# 开口向下
+		Direction.DOWN:
+			# 横线在上，三竖向下，占满整个宽度
+			draw_rect(Rect2(0, 0, s, cell), color)
+			draw_rect(Rect2(0, 0, cell, s), color)
+			draw_rect(Rect2(cell * 2, 0, cell, s), color)
+			draw_rect(Rect2(s - cell, 0, cell, s), color)

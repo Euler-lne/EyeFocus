@@ -174,6 +174,22 @@ func _apply_calibration():
 	screen_lbl.text = "屏幕: %.1f\" %dx%d" % [diag, w, h]
 	distance_lbl.text = "距离: %.2f 米" % dist
 	test_controller.force_refresh()
+	
+	
+	# 🧪 调试打印（以下为新增）
+	print("\n======== 校准参数 ========")
+	print("屏幕尺寸: %.1f 英寸" % diag)
+	print("分辨率: %d x %d" % [w, h])
+	print("测试距离: %.2f 米" % dist)
+	print("px_per_mm: %.3f" % vision_calc.get_px_per_mm())
+
+	var cur_vision = level_manager.get_current_vision()
+	var px = vision_calc.calculate_optotype_pixel_size(cur_vision)
+	var mm = px / vision_calc.get_px_per_mm()
+	print("当前视力: %.2f" % cur_vision)
+	print("理论像素边长: %.1f px" % px)
+	print("理论物理边长: %.2f mm" % mm)
+	print("==========================\n")
 
 # ── UI 更新 ─────────────────────────────────────────────────
 func _update_ui_display():
@@ -347,6 +363,7 @@ func _build_input_style(bg_color: Color, border_color: Color) -> StyleBoxFlat:
 	return style
 
 func _on_vision_updated(_v: float):
+	print("视力已更新为: ", _v)
 	_update_ui_display()
 
 func _on_consecutive_updated(correct: int, wrong: int):

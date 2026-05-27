@@ -25,6 +25,7 @@ const MIN_SPACING_PX: float = 30.0 # 最小间距（像素）
 # ── 公开接口 ────────────────────────────────────────────────
 
 func refresh(optotype_px: float):
+	print("OptotypeContainer.refresh: received px=%.1f" % optotype_px)
 	_optotype_size = max(optotype_px, 20.0)
 	_pending_build = true
 
@@ -66,6 +67,7 @@ func _on_resized():
 
 # ── 内部构建（动态间距宽布局）────────────────────────────────
 func _build():
+	print("OptotypeContainer._build: _optotype_size=%.1f" % _optotype_size)
 	var center = get_parent().get_parent()
 	if not center:
 		print("无法获取 CenterContainer")
