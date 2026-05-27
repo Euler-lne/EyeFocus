@@ -37,7 +37,7 @@
 ## 界面截图
 
 ![EyeFocus 界面截图](imgs/screenshot.png)
-![EyeFocus 界面截图](imgs/white.jpg)
+![EyeFocus 界面截图](imgs/white.png)
 
 > 白色/黑色极简风格，三分栏横屏布局，1280 × 720 分辨率。
 
