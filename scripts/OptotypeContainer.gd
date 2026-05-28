@@ -26,7 +26,7 @@ const MIN_SPACING_PX: float = 30.0 # 最小间距（像素）
 
 func refresh(optotype_px: float):
 	print("OptotypeContainer.refresh: received px=%.1f" % optotype_px)
-	_optotype_size = max(optotype_px, 20.0)
+	_optotype_size = max(optotype_px, 8.0)
 	_pending_build = true
 
 func set_theme_color(color: Color):

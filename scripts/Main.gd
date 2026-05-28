@@ -73,6 +73,17 @@ var is_testing_left: bool = true
 var _answer_feedback_timer: float = 0.0
 var current_theme: String = "dark"
 
+# 新增标志，防止重复刷新
+var _ignore_resize_refresh: bool = false
+
+# 新增：双眼依次模式下的稳定检测
+var _vision_stable_counter: int = 0          # 视力未变化的连续答题次数
+var _last_vision_value: float = 0.0          # 上次的视力值
+var _left_eye_completed: bool = false        # 左眼是否已完成测试
+var _right_eye_completed: bool = false       # 右眼是否已完成测试
+
+const STABLE_THRESHOLD: int = 5              # 连续5次答题视力不变则认为稳定
+
 const DARK_THEME := {
 	"background": Color(0.04, 0.04, 0.06, 1.0),
 	"panel_bg": Color(0.08, 0.08, 0.10, 1.0),
@@ -117,51 +128,73 @@ const LIGHT_THEME := {
 
 # ── 初始化 ──────────────────────────────────────────────────
 func _ready():
-	# 快捷键必须最先注册，否则首帧 _input() 触发时 action 不存在
 	_setup_shortcuts()
-
+	
 	vision_calc = VisionCalculator.new()
 	level_manager = VisionLevelManager.new()
 	test_controller = TestController.new()
 	test_controller.init(level_manager, vision_calc, optotype_container)
-
-	# 创建打印机管理器
+	
 	printer_mgr = PrinterManager.new()
-
-	# 信号连接
+	
 	test_controller.consecutive_updated.connect(_on_consecutive_updated)
 	test_controller.vision_updated.connect(_on_vision_updated)
 	test_controller.answer_processed.connect(_on_answer_processed)
-
-	# 答题按钮绑定
+	
 	up_btn.pressed.connect(func(): _on_answer("up"))
 	down_btn.pressed.connect(func(): _on_answer("down"))
 	left_btn.pressed.connect(func(): _on_answer("left"))
 	right_btn.pressed.connect(func(): _on_answer("right"))
-
-	# 打印相关按钮
+	
 	print_btn.pressed.connect(_on_print_result)
 	connect_btn.pressed.connect(_on_toggle_port_connect)
 	theme_toggle_btn.pressed.connect(_on_theme_toggle_pressed)
-
+	
+	get_window().size_changed.connect(_on_window_size_changed)
+	
 	_load_default_calibration()
 	_apply_calibration()
 	_apply_theme(current_theme)
 	_update_ui_display()
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-
+	
 func _process(delta: float):
 	if _answer_feedback_timer > 0.0:
 		_answer_feedback_timer -= delta
 		if _answer_feedback_timer <= 0.0:
 			hint_label.text = ""
 
+# ── 获取当前窗口的实际物理像素尺寸（考虑 DPI 缩放） ─────────────
+func _get_window_physical_size() -> Vector2i:
+	var window = get_window()
+	var logical_size = window.size
+	var scale_factor = DisplayServer.screen_get_scale(window.get_current_screen())
+	var physical_width = int(round(logical_size.x * scale_factor))
+	var physical_height = int(round(logical_size.y * scale_factor))
+	return Vector2i(max(physical_width, 1), max(physical_height, 1))
+
+# ── 窗口大小变化时自动重新校准 ─────────────────────────────────
+func _on_window_size_changed():
+	if _ignore_resize_refresh:
+		return
+	await get_tree().process_frame
+	_refresh_resolution_from_window()
+
+func _refresh_resolution_from_window():
+	var phys = _get_window_physical_size()
+	width_edit.text = str(phys.x)
+	height_edit.text = str(phys.y)
+	_apply_calibration()
+	hint_label.text = "窗口大小已改变，已自动重新校准分辨率。"
+	hint_label.modulate = Color(0.9, 0.8, 0.4)
+	_answer_feedback_timer = 2.0
+
 # ── 校准 ────────────────────────────────────────────────────
 func _load_default_calibration():
-	var s = DisplayServer.screen_get_size()
+	var phys = _get_window_physical_size()
 	screen_size_edit.text = "24.0"
-	width_edit.text = str(s.x)
-	height_edit.text = str(s.y)
+	width_edit.text = str(phys.x)
+	height_edit.text = str(phys.y)
 	distance_edit.text = "5.0"
 
 func _apply_calibration():
@@ -175,14 +208,11 @@ func _apply_calibration():
 	distance_lbl.text = "距离: %.2f 米" % dist
 	test_controller.force_refresh()
 	
-	
-	# 🧪 调试打印（以下为新增）
 	print("\n======== 校准参数 ========")
 	print("屏幕尺寸: %.1f 英寸" % diag)
 	print("分辨率: %d x %d" % [w, h])
 	print("测试距离: %.2f 米" % dist)
 	print("px_per_mm: %.3f" % vision_calc.get_px_per_mm())
-
 	var cur_vision = level_manager.get_current_vision()
 	var px = vision_calc.calculate_optotype_pixel_size(cur_vision)
 	var mm = px / vision_calc.get_px_per_mm()
@@ -362,9 +392,47 @@ func _build_input_style(bg_color: Color, border_color: Color) -> StyleBoxFlat:
 	style.content_margin_bottom = 6
 	return style
 
-func _on_vision_updated(_v: float):
-	print("视力已更新为: ", _v)
+func _on_vision_updated(new_vision: float):
+	print("视力已更新为: ", new_vision)
 	_update_ui_display()
+	
+	# 只在双眼依次模式下进行稳定检测
+	if current_mode == "both":
+		# 检查视力值是否变化
+		if abs(new_vision - _last_vision_value) < 0.01:
+			_vision_stable_counter += 1
+		else:
+			_vision_stable_counter = 0
+		_last_vision_value = new_vision
+		
+		# 达到稳定阈值，认为当前眼测试完成
+		if _vision_stable_counter >= STABLE_THRESHOLD:
+			_vision_stable_counter = 0
+			_switch_to_next_eye()
+
+func _switch_to_next_eye():
+	if is_testing_left:
+		# 左眼测试完成，记录最终视力
+		level_manager.save_eye_final_vision("left", level_manager.get_current_vision())
+		_left_eye_completed = true
+		print("左眼测试完成，最终视力: %.2f" % level_manager.get_eye_vision("left"))
+		print("请切换至右眼，测试将重置为 1.0")
+		# 切换到右眼，重置视力为 1.0
+		level_manager.switch_eye("right")
+		level_manager.reset_current_eye()   # 重置右眼为 1.0
+		is_testing_left = false
+		_update_ui_display()
+		hint_label.text = "左眼测试完成！请遮挡左眼，开始测试右眼（视力已重置为 1.0）"
+		hint_label.modulate = Color(0.9, 0.8, 0.4)
+		_answer_feedback_timer = 3.0
+	else:
+		# 右眼测试完成
+		level_manager.save_eye_final_vision("right", level_manager.get_current_vision())
+		_right_eye_completed = true
+		print("右眼测试完成，最终视力: %.2f" % level_manager.get_eye_vision("right"))
+		print("双眼测试全部完成，自动显示结果")
+		# 双眼测试完成，自动弹出结果窗口
+		_on_show_result()
 
 func _on_consecutive_updated(correct: int, wrong: int):
 	consecutive_lbl.text = "连续正确: %d  连续错误: %d" % [correct, wrong]
@@ -411,24 +479,44 @@ func _on_answer(dir: String):
 func _on_mode_left():
 	current_mode = "left"
 	level_manager.switch_eye("left")
+	# 重置左眼视力为 1.0（确保每次独立测试）
+	level_manager.reset_current_eye()
 	test_controller.force_refresh()
 	_update_ui_display()
 	_set_hint("请遮挡右眼，测试左眼")
+	# 重置稳定检测相关变量
+	_vision_stable_counter = 0
+	_last_vision_value = 0.0
+	_left_eye_completed = false
+	_right_eye_completed = false
 
 func _on_mode_right():
 	current_mode = "right"
 	level_manager.switch_eye("right")
+	# 重置右眼视力为 1.0
+	level_manager.reset_current_eye()
 	test_controller.force_refresh()
 	_update_ui_display()
 	_set_hint("请遮挡左眼，测试右眼")
+	_vision_stable_counter = 0
+	_last_vision_value = 0.0
+	_left_eye_completed = false
+	_right_eye_completed = false
 
 func _on_mode_both():
 	current_mode = "both"
 	is_testing_left = true
 	level_manager.switch_eye("left")
+	# 重置左眼视力为 1.0
+	level_manager.reset_current_eye()
 	test_controller.force_refresh()
 	_update_ui_display()
-	_set_hint("双眼依次：请先遮挡右眼，测试左眼")
+	_set_hint("双眼依次：请先遮挡右眼，测试左眼（左眼将从 1.0 开始）")
+	# 重置稳定检测
+	_vision_stable_counter = 0
+	_last_vision_value = 0.0
+	_left_eye_completed = false
+	_right_eye_completed = false
 
 func _set_hint(msg: String):
 	hint_label.text = msg
@@ -457,8 +545,11 @@ func _on_open_calibration():
 	calibration_popup.popup_centered()
 
 func _on_calibration_confirm():
+	_ignore_resize_refresh = true
 	_apply_calibration()
 	calibration_popup.hide()
+	await get_tree().process_frame
+	_ignore_resize_refresh = false
 
 # ── 结果弹窗 ────────────────────────────────────────────────
 func _on_show_result():
@@ -468,13 +559,8 @@ func _on_show_result():
 	result_left_lbl.text = "左眼视力: %.2f" % lv
 	result_right_lbl.text = "右眼视力: %.2f" % rv
 
-	# 刷新可用串口列表
 	_refresh_port_list()
-
-	# 更新连接按钮状态
 	_update_connect_btn_text()
-
-	# 清空上次打印状态
 	print_status_lbl.text = ""
 
 	result_popup.popup_centered()
@@ -486,7 +572,7 @@ func _refresh_port_list():
 		port_option.add_item("无可用串口")
 	else:
 		for p in ports:
-			port_option.add_item(str(p)) # 强制转 String，防止插件返回 int
+			port_option.add_item(str(p))
 
 func _update_connect_btn_text():
 	if printer_mgr.is_printer_connected():
@@ -494,7 +580,6 @@ func _update_connect_btn_text():
 	else:
 		connect_btn.text = "连接"
 
-# 连接 / 断开串口
 func _on_toggle_port_connect():
 	if printer_mgr.is_printer_connected():
 		printer_mgr.disconnect_port()
@@ -511,7 +596,6 @@ func _on_toggle_port_connect():
 			print_status_lbl.text = "连接失败，请检查串口"
 	_update_connect_btn_text()
 
-# 执行打印
 func _on_print_result():
 	var lv = level_manager.get_eye_vision("left")
 	var rv = level_manager.get_eye_vision("right")

@@ -27,6 +27,16 @@ func switch_eye(eye: String):
 	_save()
 	current_eye = eye
 	_load()
+	
+# 在 VisionLevelManager.gd 中添加
+func save_eye_final_vision(eye: String, vision: float):
+	if eye == "left":
+		_left["final"] = vision
+	else:
+		_right["final"] = vision
+
+func get_eye_final_vision(eye: String) -> float:
+	return _left["final"] if eye == "left" else _right["final"]
 
 func get_current_vision() -> float:
 	return VISION_LEVELS[current_index]

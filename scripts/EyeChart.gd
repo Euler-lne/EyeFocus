@@ -12,7 +12,8 @@ func set_direction(dir: int):
 	queue_redraw()
 
 func set_size_px(s: float):
-	size_px = max(s, 20.0)
+	# 将最小尺寸从 20 改为 8，使 2.0 视力的小视标不会被强制放大
+	size_px = max(s, 8.0)
 	custom_minimum_size = Vector2(size_px, size_px)
 	size = Vector2(size_px, size_px)
 	queue_redraw()
@@ -25,7 +26,6 @@ func _draw():
 	match direction:
 		# 开口向右（基准方向）
 		Direction.RIGHT:
-			# 竖线在左，三横向右，占满整个高度
 			draw_rect(Rect2(0, 0, cell, s), color)
 			draw_rect(Rect2(0, 0, s, cell), color)
 			draw_rect(Rect2(0, cell * 2, s, cell), color)
@@ -33,7 +33,6 @@ func _draw():
 
 		# 开口向左
 		Direction.LEFT:
-			# 竖线在右，三横向左，占满整个高度
 			draw_rect(Rect2(s - cell, 0, cell, s), color)
 			draw_rect(Rect2(0, 0, s, cell), color)
 			draw_rect(Rect2(0, cell * 2, s, cell), color)
@@ -41,7 +40,6 @@ func _draw():
 
 		# 开口向上
 		Direction.UP:
-			# 横线在下，三竖向上，占满整个宽度
 			draw_rect(Rect2(0, s - cell, s, cell), color)
 			draw_rect(Rect2(0, 0, cell, s), color)
 			draw_rect(Rect2(cell * 2, 0, cell, s), color)
@@ -49,7 +47,6 @@ func _draw():
 
 		# 开口向下
 		Direction.DOWN:
-			# 横线在上，三竖向下，占满整个宽度
 			draw_rect(Rect2(0, 0, s, cell), color)
 			draw_rect(Rect2(0, 0, cell, s), color)
 			draw_rect(Rect2(cell * 2, 0, cell, s), color)

@@ -654,6 +654,39 @@
 			color: #2a3a52
 		}
 
+		/* ── Videos ── */
+		.videos-section {
+			background: #000 !important;
+		}
+
+		/* Ensure videos section stays black in light theme too */
+		body[data-theme="light"] .videos-section {
+			background: #f5f7fb !important;
+		}
+
+		.videos-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+			gap: 18px;
+			align-items: start;
+		}
+
+		.video-card {
+			background: rgba(255, 255, 255, 0.02);
+			border: 1px solid rgba(255, 255, 255, 0.04);
+			padding: 14px;
+			border-radius: 12px;
+			box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+		}
+
+		.video-card video {
+			width: 100%;
+			height: auto;
+			border-radius: 8px;
+			display: block;
+		}
+
+
 		/* ── How It Works ── */
 		.how {
 			background: #07070d
@@ -1275,6 +1308,7 @@
 			<li><a href="#features">特性</a></li>
 			<li><a href="#print">打印报告</a></li>
 			<li><a href="#screenshot">界面</a></li>
+			<li><a href="#videos">演示</a></li>
 			<li><a href="#how">使用</a></li>
 			<li><a href="#arch">架构</a></li>
 			<li><a href="#tech">技术</a></li>
@@ -1434,6 +1468,36 @@
 		</div>
 	</section>
 
+	<!-- Videos / Demo -->
+	<section id="videos" class="videos-section" style="padding:60px 24px">
+		<div class="section-inner">
+			<div class="section-header reveal">
+				<h2>演示视频</h2>
+				<p>录屏演示与真人演示用于快速了解检测流程与界面交互</p>
+			</div>
+			<div class="videos-grid reveal">
+				<div class="video-card">
+					<h4 style="margin:6px 0 10px;color:#cfe">屏幕录制</h4>
+					<video controls preload="metadata" poster="imgs/screenshot_light.png">
+						<source src="videos/screen_record.mp4" type="video/mp4">
+						您的浏览器不支持视频播放。
+					</video>
+					<p style="margin-top:8px;color:#7a7a98;font-size:.95rem">包含参数校准、单眼/双眼检测与打印结果的完整录屏演示。</p>
+				</div>
+				<div class="video-card">
+					<h4 style="margin:6px 0 10px;color:#cfe">真人演示</h4>
+					<video controls preload="metadata" poster="imgs/screenshot_dark.png">
+						<source src="videos/live_demo.mp4" type="video/mp4">
+						您的浏览器不支持视频播放。
+					</video>
+					<p style="margin-top:8px;color:#7a7a98;font-size:.95rem">若需展示真实受检者操作，请将视频文件命名为
+						<code>live_demo.mp4</code> 并放入 <code>videos/</code> 目录。
+					</p>
+				</div>
+			</div>
+		</div>
+	</section>
+
 	<!-- How It Works -->
 	<section id="how" class="how">
 		<div class="section-inner">
@@ -1444,11 +1508,11 @@
 			<div class="how-steps">
 				<div class="step reveal">
 					<h3>选择测试模式</h3>
-					<p>在左侧面板选择检测模式——左眼单测、右眼单测，或双眼依次检测</p>
+					<p>在左侧面板选择检测模式——左眼单测、右眼单测，或双眼依次检测。<br>双眼依次模式会分别测量左右眼并采用阶梯收敛策略，通过多轮稳定性判据确认最终视力等级，能减小单次波动带来的误差。</p>
 				</div>
 				<div class="step reveal">
 					<h3>完成参数校准</h3>
-					<p>点击「参数校准」，输入显示器尺寸、分辨率与实测距离，确保视标物理尺寸精准</p>
+					<p>点击「参数校准」，**务必先确认或设置当前屏幕分辨率与对角线尺寸（英寸）**，并填写测试距离。校准数据用于计算像素密度（px/mm），直接影响视标物理尺寸与测量结果。</p>
 				</div>
 				<div class="step reveal">
 					<h3>遮挡对应眼睛</h3>
