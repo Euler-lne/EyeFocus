@@ -73,16 +73,11 @@ var is_testing_left: bool = true
 var _answer_feedback_timer: float = 0.0
 var current_theme: String = "dark"
 
+var _is_switching: bool = false
+
 # 新增标志，防止重复刷新
 var _ignore_resize_refresh: bool = false
 
-# 新增：双眼依次模式下的稳定检测
-var _vision_stable_counter: int = 0          # 视力未变化的连续答题次数
-var _last_vision_value: float = 0.0          # 上次的视力值
-var _left_eye_completed: bool = false        # 左眼是否已完成测试
-var _right_eye_completed: bool = false       # 右眼是否已完成测试
-
-const STABLE_THRESHOLD: int = 5              # 连续5次答题视力不变则认为稳定
 
 const DARK_THEME := {
 	"background": Color(0.04, 0.04, 0.06, 1.0),
@@ -151,6 +146,8 @@ func _ready():
 	theme_toggle_btn.pressed.connect(_on_theme_toggle_pressed)
 	
 	get_window().size_changed.connect(_on_window_size_changed)
+	
+	level_manager.eye_final_vision_determined.connect(_on_eye_final_vision_determined)
 	
 	_load_default_calibration()
 	_apply_calibration()
@@ -396,43 +393,36 @@ func _build_input_style(bg_color: Color, border_color: Color) -> StyleBoxFlat:
 func _on_vision_updated(new_vision: float):
 	print("视力已更新为: ", new_vision)
 	_update_ui_display()
-	
-	# 只在双眼依次模式下进行稳定检测
+
+
+func _on_eye_final_vision_determined(eye: String, vision: float):
+	print("眼睛 %s 最终视力确定为: %.2f" % [eye, vision])
+	if _is_switching:
+		return
+	_is_switching = true
 	if current_mode == "both":
-		# 检查视力值是否变化
-		if abs(new_vision - _last_vision_value) < 0.01:
-			_vision_stable_counter += 1
-		else:
-			_vision_stable_counter = 0
-		_last_vision_value = new_vision
-		
-		# 达到稳定阈值，认为当前眼测试完成
-		if _vision_stable_counter >= STABLE_THRESHOLD:
-			_vision_stable_counter = 0
+		if eye == "left" and is_testing_left:
 			_switch_to_next_eye()
+		elif eye == "right" and not is_testing_left:
+			_on_show_result()
+	_is_switching = false
 
 func _switch_to_next_eye():
 	if is_testing_left:
-		# 左眼测试完成，记录最终视力
-		level_manager.save_eye_final_vision("left", level_manager.get_current_vision())
-		_left_eye_completed = true
+		# 左眼测试完成（最终视力已由信号保存）
 		print("左眼测试完成，最终视力: %.2f" % level_manager.get_eye_vision("left"))
 		print("请切换至右眼，测试将重置为 1.0")
-		# 切换到右眼，重置视力为 1.0
+		# 切换到右眼，重置右眼的累计计数和等级
 		level_manager.switch_eye("right")
-		level_manager.reset_current_eye()   # 重置右眼为 1.0
+		level_manager.reset_eye("right")   # 清空右眼所有等级累计计数，并重置等级为1.0
 		is_testing_left = false
 		_update_ui_display()
 		hint_label.text = "左眼测试完成！请遮挡左眼，开始测试右眼（视力已重置为 1.0）"
 		hint_label.modulate = Color(0.9, 0.8, 0.4)
 		_answer_feedback_timer = 3.0
 	else:
-		# 右眼测试完成
-		level_manager.save_eye_final_vision("right", level_manager.get_current_vision())
-		_right_eye_completed = true
 		print("右眼测试完成，最终视力: %.2f" % level_manager.get_eye_vision("right"))
 		print("双眼测试全部完成，自动显示结果")
-		# 双眼测试完成，自动弹出结果窗口
 		_on_show_result()
 
 func _on_consecutive_updated(correct: int, wrong: int):
@@ -480,44 +470,34 @@ func _on_answer(dir: String):
 func _on_mode_left():
 	current_mode = "left"
 	level_manager.switch_eye("left")
+	level_manager.reset_eye("left")   # 清空左眼累计计数
 	# 重置左眼视力为 1.0（确保每次独立测试）
 	level_manager.reset_current_eye()
 	test_controller.force_refresh()
 	_update_ui_display()
 	_set_hint("请遮挡右眼，测试左眼")
-	# 重置稳定检测相关变量
-	_vision_stable_counter = 0
-	_last_vision_value = 0.0
-	_left_eye_completed = false
-	_right_eye_completed = false
 
 func _on_mode_right():
 	current_mode = "right"
 	level_manager.switch_eye("right")
+	level_manager.reset_eye("right")  # 清空右眼累计计数
 	# 重置右眼视力为 1.0
 	level_manager.reset_current_eye()
 	test_controller.force_refresh()
 	_update_ui_display()
 	_set_hint("请遮挡左眼，测试右眼")
-	_vision_stable_counter = 0
-	_last_vision_value = 0.0
-	_left_eye_completed = false
-	_right_eye_completed = false
 
 func _on_mode_both():
 	current_mode = "both"
 	is_testing_left = true
 	level_manager.switch_eye("left")
-	# 重置左眼视力为 1.0
+	level_manager.reset_eye("left")   # 清空左眼累计计数
+	level_manager.reset_eye("right")  # 清空右眼累计计数（确保右眼下次测试也是干净状态）
+	# 重置左眼视力为 1.0（reset_eye 已经将当前眼睛等级设为1.0，但再保险）
 	level_manager.reset_current_eye()
 	test_controller.force_refresh()
 	_update_ui_display()
 	_set_hint("双眼依次：请先遮挡右眼，测试左眼（左眼将从 1.0 开始）")
-	# 重置稳定检测
-	_vision_stable_counter = 0
-	_last_vision_value = 0.0
-	_left_eye_completed = false
-	_right_eye_completed = false
 	print("设置双眼模式")
 
 func _set_hint(msg: String):
@@ -528,32 +508,24 @@ func _set_hint(msg: String):
 # ── 控制按钮 ────────────────────────────────────────────────
 func _on_reset_test():
 	var previous_eye = level_manager.current_eye
-	level_manager.switch_eye("left")
-	level_manager.reset_current_eye()
-	level_manager.switch_eye("right")
-	level_manager.reset_current_eye()
+	# 重置左眼
+	level_manager.reset_eye("left")
+	# 重置右眼
+	level_manager.reset_eye("right")
+	# 恢复当前眼睛
 	level_manager.switch_eye(previous_eye)
+	level_manager.reset_current_eye()   # 确保当前眼睛等级为1.0
 	test_controller.force_refresh()
 	_update_ui_display()
 	consecutive_lbl.text = "连续正确: 0  连续错误: 0"
-	hint_label.text = "已重置双眼视力至 1.0"
+	hint_label.text = "已重置双眼视力至 1.0，累计正确计数已清零"
 	hint_label.modulate = Color(0.9, 0.8, 0.4)
 	_answer_feedback_timer = 2.0
-	
-	# 如果当前是双眼依次模式，重置稳定检测相关变量
+	# 如果处于双眼模式，重置辅助变量
 	if current_mode == "both":
-		_vision_stable_counter = 0
-		_last_vision_value = 0.0
-		_left_eye_completed = false
-		_right_eye_completed = false
-		# 确保正在测试左眼（双眼模式的起始）
 		is_testing_left = true
 		level_manager.switch_eye("left")
-		# 保证当前视力为 1.0（已重置过，但再确保一次）
-		level_manager.reset_current_eye()
-		_update_ui_display()
-	
-	print("重置双眼")
+	print("重置双眼，累计计数清零")
 	
 func _on_pause_test():
 	is_paused = !is_paused
