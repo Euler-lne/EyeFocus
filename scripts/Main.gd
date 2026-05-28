@@ -68,7 +68,7 @@ var printer_mgr: PrinterManager
 
 # ── 状态 ────────────────────────────────────────────────────
 var is_paused: bool = false
-var current_mode: String = "left"
+var current_mode: String = "both"
 var is_testing_left: bool = true
 var _answer_feedback_timer: float = 0.0
 var current_theme: String = "dark"
@@ -156,6 +156,7 @@ func _ready():
 	_apply_calibration()
 	_apply_theme(current_theme)
 	_update_ui_display()
+	_on_mode_both()
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	
 func _process(delta: float):
@@ -468,7 +469,7 @@ func _input(event: InputEvent):
 	elif Input.is_action_just_pressed("answer_down"): _on_answer("down")
 	elif Input.is_action_just_pressed("answer_left"): _on_answer("left")
 	elif Input.is_action_just_pressed("answer_right"): _on_answer("right")
-
+	
 func _on_answer(dir: String):
 	if is_paused:
 		return
@@ -517,6 +518,7 @@ func _on_mode_both():
 	_last_vision_value = 0.0
 	_left_eye_completed = false
 	_right_eye_completed = false
+	print("设置双眼模式")
 
 func _set_hint(msg: String):
 	hint_label.text = msg
@@ -525,11 +527,32 @@ func _set_hint(msg: String):
 
 # ── 控制按钮 ────────────────────────────────────────────────
 func _on_reset_test():
+	# 保存当前眼睛以便最后恢复（可选）
+	var previous_eye = level_manager.current_eye
+	
+	# 重置左眼
+	level_manager.switch_eye("left")
 	level_manager.reset_current_eye()
+	
+	# 重置右眼
+	level_manager.switch_eye("right")
+	level_manager.reset_current_eye()
+	
+	# 恢复当前眼睛（保持原测试模式）
+	level_manager.switch_eye(previous_eye)
+	
+	# 刷新视标和UI
 	test_controller.force_refresh()
 	_update_ui_display()
 	consecutive_lbl.text = "连续正确: 0  连续错误: 0"
-
+	
+	# 额外提示
+	hint_label.text = "已重置双眼视力至 1.0"
+	hint_label.modulate = Color(0.9, 0.8, 0.4)
+	_answer_feedback_timer = 2.0
+	
+	print("重置双眼")
+	
 func _on_pause_test():
 	is_paused = !is_paused
 	pause_btn.text = "继续测试" if is_paused else "暂停测试"
@@ -564,6 +587,9 @@ func _on_show_result():
 	print_status_lbl.text = ""
 
 	result_popup.popup_centered()
+	
+	# 让“打印结果”按钮自动获得焦点，方便按 Enter 键直接打印
+	print_btn.grab_focus()
 
 func _refresh_port_list():
 	port_option.clear()
