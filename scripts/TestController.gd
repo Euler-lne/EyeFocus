@@ -9,6 +9,8 @@ var level_manager: VisionLevelManager
 var vision_calc: VisionCalculator
 var container: OptotypeContainer
 
+var last_target_dir = -1
+
 func init(mgr: VisionLevelManager, calc: VisionCalculator, cont: OptotypeContainer):
 	level_manager = mgr
 	vision_calc = calc
@@ -30,6 +32,10 @@ func process_answer(dir_str: String):
 
 	# 答完后刷新视标（延迟到下一帧执行，见 OptotypeContainer._pending_build）
 	_refresh()
+	# 确保新生成的目标方向与上一次不同（仅当上次有效时）
+	if last_target_dir != -1:
+		container.reselect_target_except(last_target_dir)
+	last_target_dir = container.target_direction
 
 func force_refresh():
 	_refresh()

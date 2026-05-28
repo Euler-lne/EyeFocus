@@ -49,7 +49,7 @@ func get_eye_vision(eye: String) -> float:
 func record_correct():
 	wrong_streak = 0
 	correct_streak += 1
-	if correct_streak >= 3:
+	if correct_streak >= 4:
 		correct_streak = 0
 		# 正确：提升视力等级（视力值变大，视标变小）
 		if current_index < VISION_LEVELS.size() - 1:

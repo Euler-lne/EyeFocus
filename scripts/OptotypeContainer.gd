@@ -183,3 +183,18 @@ func _build():
 		target_direction = EyeChart.Direction.UP
 
 	queue_redraw()
+	
+func reselect_target_except(avoid_dir: int):
+	if _charts.is_empty():
+		return
+	# 收集所有不是 avoid_dir 的视标索引
+	var candidates = []
+	for i in range(_charts.size()):
+		if _charts[i].direction != avoid_dir:
+			candidates.append(i)
+	if candidates.is_empty():
+		# 如果所有视标方向都是 avoid_dir（不可能，但防御）
+		candidates = range(_charts.size())
+	_target_idx = candidates[randi() % candidates.size()]
+	target_direction = _charts[_target_idx].direction
+	queue_redraw()

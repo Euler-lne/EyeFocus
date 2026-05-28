@@ -527,29 +527,31 @@ func _set_hint(msg: String):
 
 # ── 控制按钮 ────────────────────────────────────────────────
 func _on_reset_test():
-	# 保存当前眼睛以便最后恢复（可选）
 	var previous_eye = level_manager.current_eye
-	
-	# 重置左眼
 	level_manager.switch_eye("left")
 	level_manager.reset_current_eye()
-	
-	# 重置右眼
 	level_manager.switch_eye("right")
 	level_manager.reset_current_eye()
-	
-	# 恢复当前眼睛（保持原测试模式）
 	level_manager.switch_eye(previous_eye)
-	
-	# 刷新视标和UI
 	test_controller.force_refresh()
 	_update_ui_display()
 	consecutive_lbl.text = "连续正确: 0  连续错误: 0"
-	
-	# 额外提示
 	hint_label.text = "已重置双眼视力至 1.0"
 	hint_label.modulate = Color(0.9, 0.8, 0.4)
 	_answer_feedback_timer = 2.0
+	
+	# 如果当前是双眼依次模式，重置稳定检测相关变量
+	if current_mode == "both":
+		_vision_stable_counter = 0
+		_last_vision_value = 0.0
+		_left_eye_completed = false
+		_right_eye_completed = false
+		# 确保正在测试左眼（双眼模式的起始）
+		is_testing_left = true
+		level_manager.switch_eye("left")
+		# 保证当前视力为 1.0（已重置过，但再确保一次）
+		level_manager.reset_current_eye()
+		_update_ui_display()
 	
 	print("重置双眼")
 	
