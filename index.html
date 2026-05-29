@@ -668,10 +668,13 @@
 			display: grid;
 			grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 			gap: 18px;
-			align-items: start;
+			align-items: stretch;
 		}
 
 		.video-card {
+			display: flex;
+			flex-direction: column;
+			height: 100%;
 			background: rgba(255, 255, 255, 0.02);
 			border: 1px solid rgba(255, 255, 255, 0.04);
 			padding: 14px;
@@ -681,9 +684,25 @@
 
 		.video-card video {
 			width: 100%;
-			height: auto;
+			aspect-ratio: 16 / 9;
+			object-fit: cover;
 			border-radius: 8px;
 			display: block;
+			background: #111827;
+		}
+
+		.video-card h4 {
+			margin: 12px 0 8px;
+			color: #e6f7ff;
+			font-size: 1rem;
+			font-weight: 600;
+		}
+
+		.video-card p {
+			margin-top: 0;
+			color: #b7bfd7;
+			font-size: .95rem;
+			line-height: 1.6;
 		}
 
 
@@ -1218,6 +1237,20 @@
 			border-color: rgba(15, 23, 42, .08)
 		}
 
+		body[data-theme="light"] .video-card {
+			background: #ffffff;
+			border-color: rgba(15, 23, 42, .08);
+			box-shadow: 0 14px 30px rgba(15, 23, 42, .08)
+		}
+
+		body[data-theme="light"] .video-card h4 {
+			color: #111827
+		}
+
+		body[data-theme="light"] .video-card p {
+			color: #4b5563
+		}
+
 		body[data-theme="light"] .arch-formula {
 			background: #ffffff;
 			border-color: rgba(15, 143, 143, .14);
@@ -1477,21 +1510,20 @@
 			</div>
 			<div class="videos-grid reveal">
 				<div class="video-card">
-					<h4 style="margin:6px 0 10px;color:#cfe">屏幕录制</h4>
+					<h4 class="video-title">屏幕录制</h4>
 					<video controls preload="metadata" poster="imgs/screenshot_light.png">
 						<source src="videos/screen_record.mp4" type="video/mp4">
 						您的浏览器不支持视频播放。
 					</video>
-					<p style="margin-top:8px;color:#7a7a98;font-size:.95rem">包含参数校准、单眼/双眼检测与打印结果的完整录屏演示。</p>
+					<p class="video-desc">包含参数校准、单眼/双眼检测与打印结果的完整录屏演示。</p>
 				</div>
 				<div class="video-card">
-					<h4 style="margin:6px 0 10px;color:#cfe">真人演示</h4>
+					<h4 class="video-title">真人演示</h4>
 					<video controls preload="metadata" poster="imgs/screenshot_dark.png">
 						<source src="videos/live_demo.mp4" type="video/mp4">
 						您的浏览器不支持视频播放。
 					</video>
-					<p style="margin-top:8px;color:#7a7a98;font-size:.95rem">已包含真人演示视频
-					</p>
+					<p class="video-desc">已包含真人演示视频</p>
 				</div>
 			</div>
 		</div>
